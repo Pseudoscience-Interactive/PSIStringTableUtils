@@ -1,0 +1,27 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.0.1",
+	"FriendlyName": "PSI String Table Utilities",
+	"Description": "The PSI String Table Utilities plugin provides a Blueprint API to modify String Tables and makes it easier to set and retrieve their metadata.",
+	"Category": "PSI",
+	"CreatedBy": "Pseudoscience Interactive",
+	"CreatedByURL": "https://pseudoscienceinteractive.com/",
+	"DocsURL": "https://pseudoscienceinteractive.com/psi-string-table-utilities/",
+	"MarketplaceURL": "",
+	"SupportURL": "https://pseudoscienceinteractive.com/psi-string-table-utilities/",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "PSIStringTableUtils",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64", "Mac", "IOS", "TVOS", "Android", "Linux"
+			]
+		}
+	]
+}
