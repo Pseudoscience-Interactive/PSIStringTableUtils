@@ -20,12 +20,18 @@ int32 FPSIStringTableHelper::GetStringTableEntryMetaDataAsStruct(const FStringTa
         const FProperty* Property = *It;
         const FName MetaDataKey = FName(Property->GetAuthoredName());
         const FString MetaDataValue = StringTable->GetMetaData(TextKey, MetaDataKey);
-
+        void* ValuePtr = Property->ContainerPtrToValuePtr<void>(StructValuePtr);
+        
         if (!MetaDataValue.IsEmpty())
         {
-            void* ValuePtr = Property->ContainerPtrToValuePtr<void>(StructValuePtr);
             Property->ImportText_Direct(*MetaDataValue, ValuePtr, nullptr, PPF_Delimited);
             ChangedProperties++;
+        }
+
+        else
+        {
+            // Clear the value if it's not set in the metadata.
+            Property->ClearValue(ValuePtr);
         }
     }
     
@@ -58,7 +64,7 @@ bool FPSIStringTableHelper::SetStringTableEntryMetaDataFromStruct(const FStringT
         if (bDiffersFromDefault)
         {
             FString MetaDataValue;
-            if (Property->ExportText_Direct(MetaDataValue, ValuePtr, nullptr, nullptr, PPF_Delimited))
+            if (Property->ExportText_Direct(MetaDataValue, ValuePtr, nullptr, nullptr, PPF_Delimited | PPF_ExternalEditor))
             {
                 StringTable->SetMetaData(TextKey, MetaDataKey, MetaDataValue);
                 bChanged = true;
