@@ -6,95 +6,9 @@
 #include "Internationalization/StringTableCore.h"
 #include "Internationalization/StringTableRegistry.h"
 #include "UObject/TextProperty.h"
+#include "PSIEngineVersionComparison.h"
 
 #define LOCTEXT_NAMESPACE "PSIStringTableUtils"
-
-bool UPSIStringTableLibrary::SetStringTableSourceString(const FName TableId, const FString& Key,
-    const FString& InSourceString, bool bPreserveData)
-{
-    if (Key.IsEmpty())
-    {
-        return false;
-    }
-
-    const FStringTablePtr StringTable = FStringTableRegistry::Get().FindMutableStringTable(TableId);
-    if (!StringTable.IsValid())
-    {
-        return false;
-    }
-    
-    const FTextKey TextKey(Key);
-    if (bPreserveData)
-    {
-        const FStringTableEntryConstPtr StringTableEntry = StringTable->FindEntry(TextKey);
-        if (StringTable.IsValid())
-        {
-            TArray<TTuple<FName, FString>> MetaData;
-            StringTable->EnumerateMetaData(TextKey, [&MetaData](FName MetaDataId, const FString& MetaDataValue)
-            {
-                MetaData.Emplace(MetaDataId, MetaDataValue);
-                
-                // continue
-                return true;
-            });
-        
-#if WITH_EDITORONLY_DATA
-            const FString DevNotes = StringTableEntry->GetDevNotes();
-            StringTable->SetSourceString(TextKey, InSourceString, DevNotes);
-#else
-            StringTable->SetSourceString(TextKey, InSourceString);
-#endif
-            
-            for (const TTuple<FName, FString>& Tuple : MetaData)
-            {
-                StringTable->SetMetaData(TextKey, Tuple.Key, Tuple.Value);
-            }
-            
-#if WITH_EDITOR
-            FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
-#endif
-            return true;
-        }
-    }
-
-#if WITH_EDITORONLY_DATA
-    StringTable->SetSourceString(TextKey, InSourceString, FString());
-#else
-    StringTable->SetSourceString(TextKey, InSourceString);
-#endif
-    
-#if WITH_EDITOR
-    FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
-#endif
-    
-    return true;
-}
-
-bool UPSIStringTableLibrary::RemoveStringTableEntry(const FName TableId, const FString& Key)
-{
-    if (Key.IsEmpty())
-    {
-        return false;
-    }
-
-    const FStringTablePtr StringTable = FStringTableRegistry::Get().FindMutableStringTable(TableId);
-    if (!StringTable.IsValid())
-    {
-        return false;
-    }
-    
-    const FTextKey TextKey(Key);
-    if (StringTable->FindEntry(TextKey).IsValid())
-    {
-        StringTable->RemoveSourceString(TextKey);
-#if WITH_EDITOR
-        FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
-#endif
-        return true;
-    }
-    
-    return false;
-}
 
 void UPSIStringTableLibrary::GetStringTableEntryMetaDataAsStruct(const FName, const FString&, FGenericStruct&, int32&)
 {
@@ -104,16 +18,16 @@ void UPSIStringTableLibrary::GetStringTableEntryMetaDataAsStruct(const FName, co
 
 DEFINE_FUNCTION(UPSIStringTableLibrary::execGetStringTableEntryMetaDataAsStruct)
 {
-    execRetrieveStringTableEntryMetaDataAsStruct(Context, Stack, RESULT_PARAM);
+    execPopulateStructWithStringTableEntryMetaData(Context, Stack, RESULT_PARAM);
 }
 
-void UPSIStringTableLibrary::RetrieveStringTableEntryMetaDataAsStruct(const FName, const FString&, FGenericStruct&, int32&)
+void UPSIStringTableLibrary::PopulateStructWithStringTableEntryMetaData(const FName, const FString&, FGenericStruct&, int32&)
 {
     // We should never hit this! stubs to avoid NoExport on the class.
     checkNoEntry();
 }
 
-DEFINE_FUNCTION(UPSIStringTableLibrary::execRetrieveStringTableEntryMetaDataAsStruct)
+DEFINE_FUNCTION(UPSIStringTableLibrary::execPopulateStructWithStringTableEntryMetaData)
 {
     P_GET_PROPERTY(FNameProperty, TableId)
     P_GET_PROPERTY(FStrProperty, Key)
@@ -146,6 +60,88 @@ DEFINE_FUNCTION(UPSIStringTableLibrary::execRetrieveStringTableEntryMetaDataAsSt
                  FStringTableRegistry::Get().FindStringTable(TableId), Key, ValueProp->Struct, ValuePtr);
         P_NATIVE_END;
     }
+}
+
+#if WITH_EDITOR
+bool UPSIStringTableLibrary::SetStringTableSourceString(const FName TableId, const FString& Key,
+    const FString& InSourceString, bool bPreserveData)
+{
+    if (Key.IsEmpty())
+    {
+        return false;
+    }
+
+    const FStringTablePtr StringTable = FStringTableRegistry::Get().FindMutableStringTable(TableId);
+    if (!StringTable.IsValid())
+    {
+        return false;
+    }
+    
+    const FTextKey TextKey(Key);
+    if (bPreserveData)
+    {
+        const FStringTableEntryConstPtr StringTableEntry = StringTable->FindEntry(TextKey);
+        if (StringTable.IsValid())
+        {
+            TArray<TTuple<FName, FString>> MetaData;
+            StringTable->EnumerateMetaData(TextKey, [&MetaData](FName MetaDataId, const FString& MetaDataValue)
+            {
+                MetaData.Emplace(MetaDataId, MetaDataValue);
+                
+                // continue
+                return true;
+            });
+
+#if PSI_VERSION_NEWER_THAN_OR_EQUAL(5, 8, 0) && WITH_EDITORONLY_DATA
+            const FString DevNotes = StringTableEntry->GetDevNotes();
+            StringTable->SetSourceString(TextKey, InSourceString, DevNotes);
+#else
+            StringTable->SetSourceString(TextKey, InSourceString);
+#endif
+            
+            for (const TTuple<FName, FString>& Tuple : MetaData)
+            {
+                StringTable->SetMetaData(TextKey, Tuple.Key, Tuple.Value);
+            }
+            
+            FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
+            return true;
+        }
+    }
+
+#if WITH_EDITORONLY_DATA
+    StringTable->SetSourceString(TextKey, InSourceString, FString());
+#else
+    StringTable->SetSourceString(TextKey, InSourceString);
+#endif
+    
+    FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
+    
+    return true;
+}
+
+bool UPSIStringTableLibrary::RemoveStringTableEntry(const FName TableId, const FString& Key)
+{
+    if (Key.IsEmpty())
+    {
+        return false;
+    }
+
+    const FStringTablePtr StringTable = FStringTableRegistry::Get().FindMutableStringTable(TableId);
+    if (!StringTable.IsValid())
+    {
+        return false;
+    }
+    
+    const FTextKey TextKey(Key);
+    if (StringTable->FindEntry(TextKey).IsValid())
+    {
+        StringTable->RemoveSourceString(TextKey);
+        FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
+        return true;
+    }
+    
+    return false;
 }
 
 bool UPSIStringTableLibrary::SetStringTableEntryMetaDataFromStruct(const FName, const FString&, const FGenericStruct&)
@@ -210,10 +206,7 @@ bool UPSIStringTableLibrary::SetStringTableEntryMetaData(const FName TableId, co
     }
     
     StringTable->SetMetaData(TextKey, MetaDataId, MetaDataValue);
-
-#if WITH_EDITOR
     FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
-#endif
     
     return true;
 }
@@ -236,10 +229,7 @@ bool UPSIStringTableLibrary::RemoveStringTableEntryMetaData(const FName TableId,
     if (!StringTable->GetMetaData(TextKey, MetaDataId).IsEmpty()) 
     {
         StringTable->RemoveMetaData(Key, MetaDataId);
-        
-#if WITH_EDITOR
         FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
-#endif
         
         return true;
     }
@@ -264,9 +254,7 @@ bool UPSIStringTableLibrary::ClearMetaDataFromStringTableEntry(const FName Table
     if (FPSIStringTableHelper::DoesStringTableEntryHasMetaData(StringTable, TextKey))
     {
         StringTable->ClearMetaData(TextKey);
-#if WITH_EDITOR
         FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
-#endif
         return true;
     }
 
@@ -283,10 +271,10 @@ void UPSIStringTableLibrary::ClearStringTableMetaData(const FName TableId)
     
     StringTable->ClearMetaData();
     
-#if WITH_EDITOR
     // We just assume that some metadata existed and has been removed.
     FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
-#endif
 }
+
+#endif
 
 #undef LOCTEXT_NAMESPACE
