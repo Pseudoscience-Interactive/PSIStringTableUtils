@@ -25,7 +25,7 @@ class UPSIStringTableLibrary : public UBlueprintFunctionLibrary
      * @param bPreserveData Whether any existing data for that entry should be preserved.
      * @return True, if the source string was successfully set; False, if the string table or the entry do not exist.
      */
-    UFUNCTION(Category = "PSI/String Table Utilities", BlueprintCallable, meta=(DisplayName="Set String Table Entry Meta-Data", AdvancedDisplay = bPreserveData))
+    UFUNCTION(Category = "PSI/String Table Utilities", BlueprintCallable, meta=(DisplayName="Set String Table Source String", AdvancedDisplay = bPreserveData))
     static bool SetStringTableSourceString(const FName TableId, const FString& Key, const FString& InSourceString, bool bPreserveData);
 
     /**
@@ -72,8 +72,6 @@ class UPSIStringTableLibrary : public UBlueprintFunctionLibrary
     UFUNCTION(Category = "PSI/String Table Utilities", BlueprintCallable, CustomThunk, meta = (DisplayName="Retrieve String Table Entry Meta-Data as Stuct", CustomStructureParam = "StructValue", AdvancedDisplay = RetrievedValues))
     static void RetrieveStringTableEntryMetaDataAsStruct(const FName TableId, const FString& Key, UPARAM(ref) FGenericStruct& StructValueRef, int32& RetrievedValues);
     DECLARE_FUNCTION(execRetrieveStringTableEntryMetaDataAsStruct);
-    
-
     
     /** 
      * Sets the metadata of a specific string table entry from the property values of a given struct. Each property 
