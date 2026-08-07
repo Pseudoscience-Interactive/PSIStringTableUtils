@@ -9,7 +9,7 @@
 /**
  * Helper functions to modify String Tables and to make it easier to retrieve their metadata.
  */
-namespace FPSIStringTableHelper
+namespace FPSIStringTableUtilsHelper
 {
     /**
      * Gets the metadata of the specified string table entry as property values of a given struct. Each property of 

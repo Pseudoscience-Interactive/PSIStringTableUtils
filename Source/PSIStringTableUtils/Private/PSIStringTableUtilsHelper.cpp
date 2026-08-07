@@ -1,12 +1,12 @@
 ﻿// Copyright 2025-2026 Pseudoscience Interactive. All Rights Reserved.
 
-#include "PSIStringTableHelper.h"
+#include "PSIStringTableUtilsHelper.h"
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
 #include "UObject/Class.h"
 #include "UObject/FieldIterator.h"
 
-int32 FPSIStringTableHelper::GetStringTableEntryMetaDataAsStruct(const FStringTableConstPtr& StringTable,
+int32 FPSIStringTableUtilsHelper::GetStringTableEntryMetaDataAsStruct(const FStringTableConstPtr& StringTable,
     const FTextKey& TextKey, const UScriptStruct* Struct, void* StructValuePtr)
 {
     int32 ChangedProperties = 0;
@@ -38,7 +38,7 @@ int32 FPSIStringTableHelper::GetStringTableEntryMetaDataAsStruct(const FStringTa
     return ChangedProperties;
 }
 
-bool FPSIStringTableHelper::SetStringTableEntryMetaDataFromStruct(const FStringTablePtr& StringTable, const FTextKey& TextKey,
+bool FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(const FStringTablePtr& StringTable, const FTextKey& TextKey,
     const UScriptStruct* Struct, const void* StructValuePtr)
 {
     if (Struct == nullptr || StructValuePtr == nullptr || TextKey.IsEmpty() || !StringTable.IsValid())
@@ -88,7 +88,7 @@ bool FPSIStringTableHelper::SetStringTableEntryMetaDataFromStruct(const FStringT
     return bChanged;
 }
 
-bool FPSIStringTableHelper::DoesStringTableEntryHasMetaData(const FStringTableConstPtr& StringTable, const FTextKey& Key)
+bool FPSIStringTableUtilsHelper::DoesStringTableEntryHasMetaData(const FStringTableConstPtr& StringTable, const FTextKey& Key)
 {
     bool bHasMetaData;
     StringTable->EnumerateMetaData(Key, [&](const FName&, const FString&)
@@ -101,7 +101,7 @@ bool FPSIStringTableHelper::DoesStringTableEntryHasMetaData(const FStringTableCo
 }
 
 #if WITH_EDITOR
-void FPSIStringTableHelper::NotifyStringTableChanged(const FStringTableConstPtr& StringTable)
+void FPSIStringTableUtilsHelper::NotifyStringTableChanged(const FStringTableConstPtr& StringTable)
 {
     if (!StringTable.IsValid())
     {

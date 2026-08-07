@@ -1,7 +1,7 @@
 ﻿// Copyright 2025-2026 Pseudoscience Interactive. All Rights Reserved.
 
 #include "PSIStringTableLibrary.h"
-#include "PSIStringTableHelper.h"
+#include "PSIStringTableUtilsHelper.h"
 #include "Blueprint/BlueprintExceptionInfo.h"
 #include "Internationalization/StringTableCore.h"
 #include "Internationalization/StringTableRegistry.h"
@@ -56,7 +56,7 @@ DEFINE_FUNCTION(UPSIStringTableLibrary::execPopulateStructWithStringTableEntryMe
     else
     {
         P_NATIVE_BEGIN;
-        RetrievedValues = FPSIStringTableHelper::GetStringTableEntryMetaDataAsStruct(
+        RetrievedValues = FPSIStringTableUtilsHelper::GetStringTableEntryMetaDataAsStruct(
                  FStringTableRegistry::Get().FindStringTable(TableId), Key, ValueProp->Struct, ValuePtr);
         P_NATIVE_END;
     }
@@ -104,7 +104,7 @@ bool UPSIStringTableLibrary::SetStringTableSourceString(const FName TableId, con
                 StringTable->SetMetaData(TextKey, Tuple.Key, Tuple.Value);
             }
             
-            FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
+            FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
             return true;
         }
     }
@@ -115,7 +115,7 @@ bool UPSIStringTableLibrary::SetStringTableSourceString(const FName TableId, con
     StringTable->SetSourceString(TextKey, InSourceString);
 #endif
     
-    FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
+    FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
     
     return true;
 }
@@ -137,7 +137,7 @@ bool UPSIStringTableLibrary::RemoveStringTableEntry(const FName TableId, const F
     if (StringTable->FindEntry(TextKey).IsValid())
     {
         StringTable->RemoveSourceString(TextKey);
-        FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
+        FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
         return true;
     }
     
@@ -178,7 +178,7 @@ DEFINE_FUNCTION(UPSIStringTableLibrary::execSetStringTableEntryMetaDataFromStruc
     else
     {
         P_NATIVE_BEGIN;
-        *static_cast<bool*>(RESULT_PARAM) = FPSIStringTableHelper::SetStringTableEntryMetaDataFromStruct(
+        *static_cast<bool*>(RESULT_PARAM) = FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(
             FStringTableRegistry::Get().FindMutableStringTable(TableId), Key, ValueProp->Struct, ValuePtr);
         P_NATIVE_END;
     }
@@ -206,7 +206,7 @@ bool UPSIStringTableLibrary::SetStringTableEntryMetaData(const FName TableId, co
     }
     
     StringTable->SetMetaData(TextKey, MetaDataId, MetaDataValue);
-    FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
+    FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
     
     return true;
 }
@@ -229,7 +229,7 @@ bool UPSIStringTableLibrary::RemoveStringTableEntryMetaData(const FName TableId,
     if (!StringTable->GetMetaData(TextKey, MetaDataId).IsEmpty()) 
     {
         StringTable->RemoveMetaData(Key, MetaDataId);
-        FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
+        FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
         
         return true;
     }
@@ -251,10 +251,10 @@ bool UPSIStringTableLibrary::ClearMetaDataFromStringTableEntry(const FName Table
     }
 
     const FTextKey TextKey(Key);
-    if (FPSIStringTableHelper::DoesStringTableEntryHasMetaData(StringTable, TextKey))
+    if (FPSIStringTableUtilsHelper::DoesStringTableEntryHasMetaData(StringTable, TextKey))
     {
         StringTable->ClearMetaData(TextKey);
-        FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
+        FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
         return true;
     }
 
@@ -272,7 +272,7 @@ void UPSIStringTableLibrary::ClearStringTableMetaData(const FName TableId)
     StringTable->ClearMetaData();
     
     // We just assume that some metadata existed and has been removed.
-    FPSIStringTableHelper::NotifyStringTableChanged(StringTable);
+    FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
 }
 
 #endif

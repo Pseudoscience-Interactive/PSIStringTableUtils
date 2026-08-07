@@ -17,6 +17,13 @@ public class PSIStringTableUtils : ModuleRules
             }
         );
         
+        PrivateIncludePaths.AddRange(
+            new string []
+            {
+                Path.Combine(PluginDirectory, "Source/PSISharedHeaders/StringTables")
+            }
+        );
+        
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
