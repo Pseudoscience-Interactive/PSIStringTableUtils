@@ -1,7 +1,7 @@
 ﻿// Copyright 2025-2026 Pseudoscience Interactive. All Rights Reserved.
 
 #include "PSIStringTableIdTypeCustomization.h"
-#include "SPSIStringTableId.h"
+#include "PSIStringTableEditorHelper.h"
 
 void FPSIStringTableIdTypeCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
                                                          FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)

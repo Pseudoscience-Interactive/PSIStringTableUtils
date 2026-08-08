@@ -1,7 +1,7 @@
 ﻿// Copyright 2025-2026 Pseudoscience Interactive. All Rights Reserved.
 
 #include "PSIStringTableEntryHandleTypeCustomization.h"
-#include "SPSIStringTableEntryHandle.h"
+#include "PSIStringTableEditorHelper.h"
 
 void FPSIStringTableEntryHandleTypeCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
                                                                   FDetailWidgetRow& HeaderRow,
