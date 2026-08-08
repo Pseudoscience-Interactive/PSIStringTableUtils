@@ -34,15 +34,15 @@ TSharedRef<SWidget> SPSIStringTableEntryHandleGraphPin::GetDefaultValueWidget()
 
     ParseDefaultValueData();
 
-    return SNew(SHorizontalBox)
+    return SNew(SVerticalBox)
         .Visibility(this, &SGraphPin::GetDefaultValueVisibility)
-        + SHorizontalBox::Slot()
+        + SVerticalBox::Slot()
         [
             FPSIStringTableEditorHelper::MakeStringTableSelector(
                 FOnGetPropertyComboBoxValue::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnGetTableId),
                 FOnPropertyComboBoxValueSelected::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnSetTableId))
         ]
-        + SHorizontalBox::Slot()
+        + SVerticalBox::Slot()
         [
             FPSIStringTableEditorHelper::MakeStringTableKeySelector(
                 TAttribute<FName>::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::GetStringTableIdName),

@@ -25,6 +25,7 @@ struct PSISTRINGTABLEUTILS_API FPSIStringTableEntryHandle
     FString Key;
     
     FPSIStringTableEntryHandle() {}
+    explicit FPSIStringTableEntryHandle(const FText& Text);
     
     /**
      * Creates a new instance of the 'FPSIStringTableEntryHandle' struct.

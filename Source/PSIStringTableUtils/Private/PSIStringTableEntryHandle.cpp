@@ -2,7 +2,14 @@
 
 #include "PSIStringTableEntryHandle.h"
 #include "Internationalization/StringTableCore.h"
+// ReSharper disable once CppUnusedIncludeDirective
 #include "Internationalization/StringTable.h"
+
+FPSIStringTableEntryHandle::FPSIStringTableEntryHandle(const FText& Text)
+{
+    FPSIStringTableEntryHandle Entry;
+    FTextInspector::GetTableIdAndKey(Text, Entry.TableId.Name, Entry.Key);
+}
 
 FStringTablePtr FPSIStringTableEntryHandle::GetStringTable()
 {

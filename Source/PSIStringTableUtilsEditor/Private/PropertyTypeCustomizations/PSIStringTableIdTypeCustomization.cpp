@@ -13,7 +13,6 @@ void FPSIStringTableIdTypeCustomization::CustomizeHeader(TSharedRef<IPropertyHan
     ];
     HeaderRow
     .ValueContent()
-    .MinDesiredWidth(250.f)
     [
         SNew(SPSIStringTableId)
         .StructPropertyHandle(StructPropertyHandle)

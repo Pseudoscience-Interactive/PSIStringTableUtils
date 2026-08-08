@@ -9,21 +9,21 @@
 
 TSharedPtr<SGraphPin> FPSIStringTableGraphPanelPinFactory::CreatePin(UEdGraphPin* InPin) const
 {
-	if (InPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct)
-	{
-		if (const UScriptStruct* PinStructType = Cast<UScriptStruct>(InPin->PinType.PinSubCategoryObject.Get()))
-		{
-			if (PinStructType->IsChildOf(FPSIStringTableId::StaticStruct()))
-			{
-				return SNew(SPSIStringTableIdGraphPin, InPin);
-			}
+    if (InPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct)
+    {
+        if (const UScriptStruct* PinStructType = Cast<UScriptStruct>(InPin->PinType.PinSubCategoryObject.Get()))
+        {
+            if (PinStructType->IsChildOf(FPSIStringTableId::StaticStruct()))
+            {
+                return SNew(SPSIStringTableIdGraphPin, InPin);
+            }
 
-			if (PinStructType->IsChildOf(FPSIStringTableEntryHandle::StaticStruct()))
-			{
-				return SNew(SPSIStringTableEntryHandleGraphPin, InPin);
-			}
-		}
-	}
-	
-	return nullptr;
+            if (PinStructType->IsChildOf(FPSIStringTableEntryHandle::StaticStruct()))
+            {
+                return SNew(SPSIStringTableEntryHandleGraphPin, InPin);
+            }
+        }
+    }
+    
+    return nullptr;
 }
