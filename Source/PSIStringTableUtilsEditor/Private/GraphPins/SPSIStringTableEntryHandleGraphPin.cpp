@@ -34,20 +34,24 @@ TSharedRef<SWidget> SPSIStringTableEntryHandleGraphPin::GetDefaultValueWidget()
 
     ParseDefaultValueData();
 
-    return SNew(SVerticalBox)
+    return SNew(SWrapBox)
         .Visibility(this, &SGraphPin::GetDefaultValueVisibility)
-        + SVerticalBox::Slot()
+        + SWrapBox::Slot()
         [
             FPSIStringTableEditorHelper::MakeStringTableSelector(
                 FOnGetPropertyComboBoxValue::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnGetTableId),
                 FOnPropertyComboBoxValueSelected::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnSetTableId))
         ]
-        + SVerticalBox::Slot()
+        + SWrapBox::Slot()
         [
-            FPSIStringTableEditorHelper::MakeStringTableKeySelector(
-                TAttribute<FName>::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::GetStringTableIdName),
-                FOnGetPropertyComboBoxValue::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnGetTableKey),
-                FOnPropertyComboBoxValueSelected::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnSetTableKey))
+            SNew(SBox)
+            .Visibility(this, &SPSIStringTableEntryHandleGraphPin::GetKeySelectorVisibility)
+            [
+                FPSIStringTableEditorHelper::MakeStringTableKeySelector(
+                    TAttribute<FName>::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::GetStringTableIdName),
+                    FOnGetPropertyComboBoxValue::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnGetTableKey),
+                    FOnPropertyComboBoxValueSelected::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnSetTableKey))
+            ]
         ];
 }
 
@@ -111,6 +115,11 @@ void SPSIStringTableEntryHandleGraphPin::OnSetTableKey(const FString& String)
     }
     
     UpdatePinDefaultValue();
+}
+
+EVisibility SPSIStringTableEntryHandleGraphPin::GetKeySelectorVisibility() const
+{
+    return StringTableEntryHandle.TableId.IsNone() ? EVisibility::Collapsed : EVisibility::Visible;
 }
 
 void SPSIStringTableEntryHandleGraphPin::UpdatePinDefaultValue()

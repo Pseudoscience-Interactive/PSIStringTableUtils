@@ -11,11 +11,6 @@
 
 #define LOCTEXT_NAMESPACE "PSIStringTableUtils"
 
-FPSIStringTableId UPSIStringTableLibrary::GetStringTableId(const UStringTable* StringTable)
-{
-    return StringTable != nullptr ? StringTable->GetStringTableId() : FName();
-}
-
 bool UPSIStringTableLibrary::IsStringTableRegistered(FPSIStringTableId TableId)
 {
     return TableId.GetStringTable().IsValid();
@@ -82,7 +77,7 @@ TArray<FName> UPSIStringTableLibrary::GetMetaDataIdsFromStringTableEntry(FPSIStr
 {
     TArray<FName> MetaDataIdsFromStringTable;
 
-    FStringTableConstPtr StringTable = Entry.GetStringTable();
+    const FStringTableConstPtr StringTable = Entry.GetStringTable();
     if (StringTable.IsValid())
     {
         StringTable->EnumerateMetaData(Entry.GetTextKey(), [&](FName InMetaDataId, const FString&) -> bool
@@ -138,7 +133,6 @@ bool UPSIStringTableLibrary::ImportStringTableFromCSVFile(FPSIStringTableId Tabl
 
 void UPSIStringTableLibrary::GetStringTableEntryMetaDataAsStruct(FPSIStringTableEntryHandle, FGenericStruct&, int32&)
 {
-    // We should never hit this! stubs to avoid NoExport on the class.
     checkNoEntry();
 }
 
@@ -149,7 +143,6 @@ DEFINE_FUNCTION(UPSIStringTableLibrary::execGetStringTableEntryMetaDataAsStruct)
 
 void UPSIStringTableLibrary::PopulateStructWithStringTableEntryMetaData(FPSIStringTableEntryHandle, FGenericStruct&, int32&)
 {
-    // We should never hit this! stubs to avoid NoExport on the class.
     checkNoEntry();
 }
 
@@ -171,7 +164,7 @@ DEFINE_FUNCTION(UPSIStringTableLibrary::execPopulateStructWithStringTableEntryMe
     if (ValueProp == nullptr || ValuePtr == nullptr)
     {
         const FBlueprintExceptionInfo ExceptionInfo(
-            EBlueprintExceptionType::AbortExecution,
+            EBlueprintExceptionType::AccessViolation,
             LOCTEXT("InvalidStructValueWarning", "Invalid struct value provided as wildcard")
         );
     
@@ -188,6 +181,7 @@ DEFINE_FUNCTION(UPSIStringTableLibrary::execPopulateStructWithStringTableEntryMe
 }
 
 #if WITH_EDITOR
+
 bool UPSIStringTableLibrary::SetStringTableSourceString(FPSIStringTableEntryHandle Entry,
     const FString& InSourceString, bool bPreserveData)
 {
@@ -271,7 +265,6 @@ bool UPSIStringTableLibrary::RemoveStringTableEntry(FPSIStringTableEntryHandle E
 
 bool UPSIStringTableLibrary::SetStringTableEntryMetaDataFromStruct(FPSIStringTableEntryHandle, const FGenericStruct&)
 {
-    // We should never hit this! stubs to avoid NoExport on the class.
     checkNoEntry();
     return false;
 }
@@ -410,11 +403,62 @@ void UPSIStringTableLibrary::SetStringTableNamespace(FPSIStringTableId TableId, 
     StringTable->SetNamespace(Namespace);
 }
 
+#endif
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// FPSIStringTableId
+
+bool UPSIStringTableLibrary::IsValidStringTableId(const FPSIStringTableId& Value)
+{
+    return Value.GetStringTable().IsValid();
+}
+
+FPSIStringTableId UPSIStringTableLibrary::GetStringTableId(const UStringTable* StringTable)
+{
+    return StringTable != nullptr ? StringTable->GetStringTableId() : FName();
+}
+
+FPSIStringTableId UPSIStringTableLibrary::MakeLiteralStringTableId(FPSIStringTableId Value)
+{
+    return Value;
+}
+
+bool UPSIStringTableLibrary::EqualEqual_StringTableId(const FPSIStringTableId A, FPSIStringTableId B)
+{
+    return A == B;
+}
+
+bool UPSIStringTableLibrary::NotEqual_StringTableId(FPSIStringTableId A, FPSIStringTableId B)
+{
+    return A != B;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// FPSIStringTableEntryHandle
+
+bool UPSIStringTableLibrary::IsValidStringTableEntryHandle(const FPSIStringTableEntryHandle& Entry)
+{
+    return Entry.GetStringTableEntry().IsValid();
+}
+
 FPSIStringTableEntryHandle UPSIStringTableLibrary::GetStringTableEntryHandleFromText(const FText& Text)
 {
     return FPSIStringTableEntryHandle(Text);
 }
 
-#endif
+FPSIStringTableEntryHandle UPSIStringTableLibrary::MakeLiteralStringTableEntryHandle(FPSIStringTableEntryHandle Value)
+{
+    return Value;
+}
+
+bool UPSIStringTableLibrary::EqualEqual_StringTableEntryHandle(FPSIStringTableEntryHandle A, FPSIStringTableEntryHandle B)
+{
+    return A == B;
+}
+
+bool UPSIStringTableLibrary::NotEqual_StringTableEntryHandle(FPSIStringTableEntryHandle A, FPSIStringTableEntryHandle B)
+{
+    return A != B;
+}
 
 #undef LOCTEXT_NAMESPACE

@@ -22,6 +22,7 @@ public:
 protected:
     //~ Begin SGraphPinStructInstance Interface
     virtual void ParseDefaultValueData() override;
+
     virtual TSharedRef<SWidget> GetDefaultValueWidget() override;
     //~ End SGraphPinStructInstance Interface
     
@@ -31,6 +32,8 @@ private:
     FName GetStringTableIdName() const;
     FString OnGetTableKey() const;
     void OnSetTableKey(const FString& String);
+    
+    EVisibility GetKeySelectorVisibility() const;
     
     void UpdatePinDefaultValue();
     
