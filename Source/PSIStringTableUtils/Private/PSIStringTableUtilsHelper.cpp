@@ -6,6 +6,12 @@
 #include "UObject/Class.h"
 #include "UObject/FieldIterator.h"
 
+#if WITH_EDITOR
+#include "Editor.h"
+#include "IStringTableEditor.h"
+#include "Subsystems/AssetEditorSubsystem.h"
+#endif
+
 int32 FPSIStringTableUtilsHelper::GetStringTableEntryMetaDataAsStruct(const FStringTableConstPtr& StringTable,
     const FTextKey& TextKey, const UScriptStruct* Struct, void* StructValuePtr)
 {
@@ -90,13 +96,13 @@ bool FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(const FSt
 
 bool FPSIStringTableUtilsHelper::DoesStringTableEntryHasMetaData(const FStringTableConstPtr& StringTable, const FTextKey& Key)
 {
-    bool bHasMetaData;
+    bool bHasMetaData = false;
     StringTable->EnumerateMetaData(Key, [&](const FName&, const FString&)
     {
         bHasMetaData = true;
         return false;
     });
-    
+
     return bHasMetaData;
 }
 
@@ -107,11 +113,32 @@ void FPSIStringTableUtilsHelper::NotifyStringTableChanged(const FStringTableCons
     {
         return;
     }
-    
+
     UStringTable* OwnerAsset = StringTable->GetOwnerAsset();
-    if (OwnerAsset != nullptr)
+    if (OwnerAsset == nullptr)
     {
-        OwnerAsset->Modify();
+        return;
+    }
+
+    OwnerAsset->Modify();
+
+    // The native String Table editor does not react to changes made through this helper on its own, so any editor
+    // that currently has the asset open needs to be told to refresh explicitly.
+    //
+    if (GEditor == nullptr)
+    {
+        return;
+    }
+
+    const TArray<IAssetEditorInstance*> Editors = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->FindEditorsForAsset(OwnerAsset);
+    IAssetEditorInstance* const* ExistingInstance = Editors.FindByPredicate([](const IAssetEditorInstance* Editor)
+    {
+        return Editor->GetEditorName() == FName(TEXT("StringTableEditor"));
+    });
+
+    if (ExistingInstance != nullptr)
+    {
+        static_cast<IStringTableEditor*>(*ExistingInstance)->RefreshStringTableEditor();
     }
 }
 #endif

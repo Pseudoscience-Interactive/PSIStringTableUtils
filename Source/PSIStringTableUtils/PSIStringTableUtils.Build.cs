@@ -31,6 +31,7 @@ public class PSIStringTableUtils : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "UnrealEd",
+                "StringTableEditor",
             }
         );
 
