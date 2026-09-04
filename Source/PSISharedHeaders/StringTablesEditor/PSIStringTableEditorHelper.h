@@ -18,11 +18,12 @@
 class FPSIStringTableEditorHelper
 {
     FORCEINLINE static void OnGetStringTableStrings(TArray<TSharedPtr<FString>>& OutStrings,
-        TArray<TSharedPtr<SToolTip>>& OutToolTips, TArray<bool>& OutRestrictedItems, bool bAllowClear)
+        TArray<TSharedPtr<SToolTip>>& OutToolTips, TArray<bool>& OutRestrictedItems, bool bAllowClear,
+        bool bIncludeEmptyStringTables)
     {
         TArray<FPSIStringTableHelper::FAvailableStringTable> AvailableStringTables;
-        FPSIStringTableHelper::GetAvailableStringTables(AvailableStringTables);
-        
+        FPSIStringTableHelper::GetAvailableStringTables(AvailableStringTables, bIncludeEmptyStringTables);
+
         if (bAllowClear)
         {
             // Add None
@@ -60,10 +61,10 @@ class FPSIStringTableEditorHelper
     }
     
     FORCEINLINE static void OnStringTableSelected(const FString& String,
-        TSharedRef<IPropertyHandle> PropertyHandle)
+        TSharedRef<IPropertyHandle> PropertyHandle, bool bIncludeEmptyStringTables)
     {
         FName StringTableId;
-        FPSIStringTableHelper::FindStringTableByName(FName(String), &StringTableId);
+        FPSIStringTableHelper::FindStringTableByName(FName(String), &StringTableId, bIncludeEmptyStringTables);
         PropertyHandle->SetValue(StringTableId);
     }
 
@@ -114,44 +115,48 @@ public:
      * @param OnGetDisplayString Callback to get the display string for the currently selected String Table.
      * @param OnSetValue Callback to set the selected String Table.
      * @param bAllowClear Whether to allow clearing the selection.
-     * @param ShowSearchForItemCount If the number of items in the combo box is greater than this value, it will show a 
+     * @param ShowSearchForItemCount If the number of items in the combo box is greater than this value, it will show a
      * search box to allow filtering. -1 means to never show it.
+     * @param bIncludeEmptyStringTables Whether String Tables that do not have any entries yet should be selectable.
      */
     [[nodiscard]] FORCEINLINE static TSharedRef<SWidget> MakeStringTableSelector(
         const FOnGetPropertyComboBoxValue& OnGetDisplayString,
         const FOnPropertyComboBoxValueSelected& OnSetValue,
         bool bAllowClear = true,
-        int32 ShowSearchForItemCount = 20)
+        int32 ShowSearchForItemCount = 20,
+        bool bIncludeEmptyStringTables = false)
     {
         FPropertyComboBoxArgs ComboArgs;
         ComboArgs.ShowSearchForItemCount = ShowSearchForItemCount;
-        ComboArgs.OnGetStrings = FOnGetPropertyComboBoxStrings::CreateStatic(&OnGetStringTableStrings, bAllowClear);
+        ComboArgs.OnGetStrings = FOnGetPropertyComboBoxStrings::CreateStatic(&OnGetStringTableStrings, bAllowClear, bIncludeEmptyStringTables);
         ComboArgs.OnGetValue = OnGetDisplayString;
         ComboArgs.OnValueSelected = OnSetValue;
-        
+
         return PropertyCustomizationHelpers::MakePropertyComboBox(ComboArgs);
     }
 
     /** 
      * Creates a combo box widget for selecting a String Table. 
-     * @param PropertyHandle The 'IPropertyHandle' that points to an 'FName' or an 'FPSIStringTableId' property. 
+     * @param PropertyHandle The 'IPropertyHandle' that points to an 'FName' or an 'FPSIStringTableId' property.
      * ID.
      * @param bAllowClear Whether to allow clearing the selection.
-     * @param ShowSearchForItemCount If the number of items in the combo box is greater than this value, it will show a 
+     * @param ShowSearchForItemCount If the number of items in the combo box is greater than this value, it will show a
      * search box to allow filtering. -1 means to never show it.
+     * @param bIncludeEmptyStringTables Whether String Tables that do not have any entries yet should be selectable.
      */
     [[nodiscard]] FORCEINLINE static TSharedRef<SWidget> MakeStringTableSelector(
         const TSharedRef<IPropertyHandle>& PropertyHandle,
         bool bAllowClear = true,
-        int32 ShowSearchForItemCount = 20)
+        int32 ShowSearchForItemCount = 20,
+        bool bIncludeEmptyStringTables = false)
     {
         FPropertyComboBoxArgs ComboArgs;
         ComboArgs.PropertyHandle = PropertyHandle;
         ComboArgs.ShowSearchForItemCount = ShowSearchForItemCount;
-        ComboArgs.OnGetStrings = FOnGetPropertyComboBoxStrings::CreateStatic(&OnGetStringTableStrings, bAllowClear);
+        ComboArgs.OnGetStrings = FOnGetPropertyComboBoxStrings::CreateStatic(&OnGetStringTableStrings, bAllowClear, bIncludeEmptyStringTables);
         ComboArgs.OnGetValue = FOnGetPropertyComboBoxValue::CreateStatic(&OnGetStringTableValue, PropertyHandle);
-        ComboArgs.OnValueSelected = FOnPropertyComboBoxValueSelected::CreateStatic(&OnStringTableSelected, PropertyHandle);
-        
+        ComboArgs.OnValueSelected = FOnPropertyComboBoxValueSelected::CreateStatic(&OnStringTableSelected, PropertyHandle, bIncludeEmptyStringTables);
+
         return PropertyCustomizationHelpers::MakePropertyComboBox(ComboArgs);
     }
     
@@ -268,7 +273,7 @@ public:
         const bool bAllowClear = !(StructPropertyHandle->GetMetaDataProperty()->PropertyFlags & CPF_NoClear);
 
         StringTableWidget = FPSIStringTableEditorHelper::MakeStringTableSelector(
-            StringTablePropertyHandle.ToSharedRef(), bAllowClear, InArgs._ShowSearchForItemCount);
+            StringTablePropertyHandle.ToSharedRef(), bAllowClear, InArgs._ShowSearchForItemCount, /*bIncludeEmptyStringTables*/ true);
 
         StringTableKeyWidget = FPSIStringTableEditorHelper::MakeStringTableKeySelector(
             TAttribute<FName>::CreateSP(this, &SPSIStringTableEntryHandle::GetStringTableIdName),
@@ -335,7 +340,7 @@ private:
         FString StringTableKey;
         StringTableKeyPropertyHandle->GetValue(StringTableKey);
 
-        const FStringTableConstPtr StringTable = FPSIStringTableHelper::FindStringTableByName(TableId);
+        const FStringTableConstPtr StringTable = FPSIStringTableHelper::FindStringTableByName(TableId, nullptr, /*bIncludeEmptyStringTables*/ true);
         if (!StringTable.IsValid())
         {
             StringTableKeyPropertyHandle->SetValue(FString());

@@ -64,8 +64,11 @@ namespace FPSIStringTableHelper
         FText DisplayName;
     };
     
-    /** Gets all currently available String Tables with their IDs and display names. */
-    FORCEINLINE void GetAvailableStringTables(TArray<FAvailableStringTable>& OutAvailableStringTables)
+    /**
+     * Gets all currently available String Tables with their IDs and display names.
+     * @param bIncludeEmptyStringTables Whether String Tables that do not have any entries yet should be included.
+     */
+    FORCEINLINE void GetAvailableStringTables(TArray<FAvailableStringTable>& OutAvailableStringTables, bool bIncludeEmptyStringTables = false)
     {
         // Based on 'STextPropertyEditableStringTableReference::UpdateStringTableComboOptions'
         //
@@ -79,7 +82,9 @@ namespace FPSIStringTableHelper
         {
             const FName StringTableId = *AssetData.GetObjectPathString();
             
-            // Only allow string tables assets that have entries to be visible, otherwise unexpected behavior happens for the user
+            // By default, only string table assets that have entries are visible, since selecting an empty one causes
+            // unexpected behavior in most pickers. Callers that can handle an empty String Table (e.g. to create its
+            // first entry) can opt in via 'bIncludeEmptyStringTables'.
             bool bHasEntries;
             const FStringTableConstPtr StringTable = FStringTableRegistry::Get().FindStringTable(StringTableId);
             if (StringTable.IsValid())
@@ -101,12 +106,12 @@ namespace FPSIStringTableHelper
                 bHasEntries = true;
             }
 
-            if (!bHasEntries)
+            if (!bHasEntries && !bIncludeEmptyStringTables)
             {
                 // continue
                 return true;
             }
-            
+
             FAvailableStringTable& AvailableStringTableEntry = OutAvailableStringTables.AddDefaulted_GetRef();
             AvailableStringTableEntry.TableId = StringTableId;
             AvailableStringTableEntry.DisplayName = FText::FromName(AssetData.AssetName);
@@ -133,7 +138,7 @@ namespace FPSIStringTableHelper
                 return InAvailableStringTable.TableId == InTableId;
             });
             
-            if (!bAlreadyAdded && HasStringTableEntries(StringTable))
+            if (!bAlreadyAdded && (bIncludeEmptyStringTables || HasStringTableEntries(StringTable)))
             {
                 FAvailableStringTable& AvailableStringTableEntry = OutAvailableStringTables.AddDefaulted_GetRef();
                 AvailableStringTableEntry.TableId = InTableId;
@@ -150,8 +155,11 @@ namespace FPSIStringTableHelper
         });
     }
     
-    /** Finds the String Table with the specified name, if it exists. */
-    FORCEINLINE FStringTableConstPtr FindStringTableByName(const FName& StringTableName, FName* OutStringTableId = nullptr)
+    /**
+     * Finds the String Table with the specified name, if it exists.
+     * @param bIncludeEmptyStringTables Whether a String Table that does not have any entries yet should be found.
+     */
+    FORCEINLINE FStringTableConstPtr FindStringTableByName(const FName& StringTableName, FName* OutStringTableId = nullptr, bool bIncludeEmptyStringTables = false)
     {
         if (StringTableName.IsNone())
         {
@@ -168,7 +176,9 @@ namespace FPSIStringTableHelper
         {
             const FName StringTableId = *AssetData.GetObjectPathString();
             
-            // Only allow string tables assets that have entries to be visible, otherwise unexpected behavior happens for the user
+            // By default, only string table assets that have entries are visible, since selecting an empty one causes
+            // unexpected behavior in most pickers. Callers that can handle an empty String Table (e.g. to create its
+            // first entry) can opt in via 'bIncludeEmptyStringTables'.
             bool bHasEntries;
             FStringTableConstPtr StringTable = FStringTableRegistry::Get().FindStringTable(StringTableId);
             if (StringTable.IsValid())
@@ -192,9 +202,9 @@ namespace FPSIStringTableHelper
                 bHasEntries = true;
             }
 
-            // We make sure that we check for the ID itself, for a simple asset name as well as for more complex object 
+            // We make sure that we check for the ID itself, for a simple asset name as well as for more complex object
             // paths. The latter ensures that we can assign asset references copied from the content browser.
-            if (bHasEntries && (
+            if ((bHasEntries || bIncludeEmptyStringTables) && (
                 StringTableName == StringTableId ||
                 StringTableName == AssetData.AssetName ||
                 FSoftObjectPath(StringTableName.ToString()) == AssetData.ToSoftObjectPath()))
@@ -242,7 +252,7 @@ namespace FPSIStringTableHelper
             }
 #endif
 
-            if (HasStringTableEntries(StringTable) && StringTableName == StringTableId)
+            if ((bIncludeEmptyStringTables || HasStringTableEntries(StringTable)) && StringTableName == StringTableId)
             {
                 Result = StringTable;
                 if (OutStringTableId != nullptr)
