@@ -185,7 +185,7 @@ DEFINE_FUNCTION(UPSIStringTableLibrary::execPopulateStructWithStringTableEntryMe
 bool UPSIStringTableLibrary::SetStringTableSourceString(FPSIStringTableEntryHandle Entry,
     const FString& InSourceString, bool bPreserveData)
 {
-    if (Entry.IsNone())
+    if (Entry.IsNone() || Entry.Key.IsEmpty())
     {
         return false;
     }
