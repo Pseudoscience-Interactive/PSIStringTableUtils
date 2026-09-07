@@ -42,7 +42,8 @@ public class PSIStringTableUtilsEditor : ModuleRules
                 "UnrealEd",
                 "GraphEditor",
                 "BlueprintGraph",
-                
+                "StringTableEditor",
+
                 // PSI
                 "PSIStringTableUtils"
             }

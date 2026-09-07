@@ -3,14 +3,9 @@
 #include "PSIStringTableUtilsHelper.h"
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
+#include "PSIStringTableUtilsModule.h"
 #include "UObject/Class.h"
 #include "UObject/FieldIterator.h"
-
-#if WITH_EDITOR
-#include "Editor.h"
-#include "IStringTableEditor.h"
-#include "Subsystems/AssetEditorSubsystem.h"
-#endif
 
 int32 FPSIStringTableUtilsHelper::GetStringTableEntryMetaDataAsStruct(const FStringTableConstPtr& StringTable,
     const FTextKey& TextKey, const UScriptStruct* Struct, void* StructValuePtr)
@@ -123,22 +118,10 @@ void FPSIStringTableUtilsHelper::NotifyStringTableChanged(const FStringTableCons
     OwnerAsset->Modify();
 
     // The native String Table editor does not react to changes made through this helper on its own, so any editor
-    // that currently has the asset open needs to be told to refresh explicitly.
+    // that currently has the asset open needs to be told to refresh explicitly. That logic lives in
+    // 'PSIStringTableUtilsEditor', an editor-only module this one may not depend on, so it is reached through a
+    // delegate instead.
     //
-    if (GEditor == nullptr)
-    {
-        return;
-    }
-
-    const TArray<IAssetEditorInstance*> Editors = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->FindEditorsForAsset(OwnerAsset);
-    IAssetEditorInstance* const* ExistingInstance = Editors.FindByPredicate([](const IAssetEditorInstance* Editor)
-    {
-        return Editor->GetEditorName() == FName(TEXT("StringTableEditor"));
-    });
-
-    if (ExistingInstance != nullptr)
-    {
-        static_cast<IStringTableEditor*>(*ExistingInstance)->RefreshStringTableEditor();
-    }
+    IPSIStringTableUtilsModule::Get().OnStringTableChangedExternally.ExecuteIfBound(OwnerAsset);
 }
 #endif
