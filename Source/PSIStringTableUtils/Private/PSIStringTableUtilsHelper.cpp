@@ -3,6 +3,7 @@
 #include "PSIStringTableUtilsHelper.h"
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
+#include "PSIStringTableUtilsModule.h"
 #include "UObject/Class.h"
 #include "UObject/FieldIterator.h"
 
@@ -90,13 +91,13 @@ bool FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(const FSt
 
 bool FPSIStringTableUtilsHelper::DoesStringTableEntryHasMetaData(const FStringTableConstPtr& StringTable, const FTextKey& Key)
 {
-    bool bHasMetaData;
+    bool bHasMetaData = false;
     StringTable->EnumerateMetaData(Key, [&](const FName&, const FString&)
     {
         bHasMetaData = true;
         return false;
     });
-    
+
     return bHasMetaData;
 }
 
@@ -107,11 +108,20 @@ void FPSIStringTableUtilsHelper::NotifyStringTableChanged(const FStringTableCons
     {
         return;
     }
-    
+
     UStringTable* OwnerAsset = StringTable->GetOwnerAsset();
-    if (OwnerAsset != nullptr)
+    if (OwnerAsset == nullptr)
     {
-        OwnerAsset->Modify();
+        return;
     }
+
+    OwnerAsset->Modify();
+
+    // The native String Table editor does not react to changes made through this helper on its own, so any editor
+    // that currently has the asset open needs to be told to refresh explicitly. That logic lives in
+    // 'PSIStringTableUtilsEditor', an editor-only module this one may not depend on, so it is reached through a
+    // delegate instead.
+    //
+    IPSIStringTableUtilsModule::Get().OnStringTableChangedExternally.ExecuteIfBound(OwnerAsset);
 }
 #endif

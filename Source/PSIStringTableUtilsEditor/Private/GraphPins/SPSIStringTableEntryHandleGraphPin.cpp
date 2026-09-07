@@ -40,7 +40,8 @@ TSharedRef<SWidget> SPSIStringTableEntryHandleGraphPin::GetDefaultValueWidget()
         [
             FPSIStringTableEditorHelper::MakeStringTableSelector(
                 FOnGetPropertyComboBoxValue::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnGetTableId),
-                FOnPropertyComboBoxValueSelected::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnSetTableId))
+                FOnPropertyComboBoxValueSelected::CreateSP(this, &SPSIStringTableEntryHandleGraphPin::OnSetTableId),
+                /*bAllowClear*/ true, /*ShowSearchForItemCount*/ 20, /*bIncludeEmptyStringTables*/ true)
         ]
         + SWrapBox::Slot()
         [
@@ -63,7 +64,7 @@ FString SPSIStringTableEntryHandleGraphPin::OnGetTableId() const
 void SPSIStringTableEntryHandleGraphPin::OnSetTableId(const FString& NewValue)
 {
     FName TableId;
-    const FStringTableConstPtr StringTable = FPSIStringTableHelper::FindStringTableByName(*NewValue, &TableId);
+    const FStringTableConstPtr StringTable = FPSIStringTableHelper::FindStringTableByName(*NewValue, &TableId, /*bIncludeEmptyStringTables*/ true);
     if (StringTableEntryHandle.TableId == TableId)
     {
         return;
@@ -84,6 +85,8 @@ void SPSIStringTableEntryHandleGraphPin::OnSetTableId(const FString& NewValue)
             return false;
         });
     }
+
+    UpdatePinDefaultValue();
 }
 
 FName SPSIStringTableEntryHandleGraphPin::GetStringTableIdName() const

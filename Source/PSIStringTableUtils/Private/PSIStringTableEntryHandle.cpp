@@ -7,8 +7,7 @@
 
 FPSIStringTableEntryHandle::FPSIStringTableEntryHandle(const FText& Text)
 {
-    FPSIStringTableEntryHandle Entry;
-    FTextInspector::GetTableIdAndKey(Text, Entry.TableId.Name, Entry.Key);
+    FTextInspector::GetTableIdAndKey(Text, TableId.Name, Key);
 }
 
 FStringTablePtr FPSIStringTableEntryHandle::GetStringTable()

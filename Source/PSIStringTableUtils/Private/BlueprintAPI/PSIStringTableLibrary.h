@@ -17,9 +17,10 @@ UCLASS(DisplayName="PSI String Table Library")
 class UPSIStringTableLibrary : public UBlueprintFunctionLibrary
 {
     GENERATED_BODY()
-    
-    /** 
-     * Whether the string table with the specified ID is registered in the string table registry. 
+
+public:
+    /**
+     * Whether the string table with the specified ID is registered in the string table registry.
      * @param TableId The ID of the string table.
      * @return True if the string table is registered; false, otherwise.
      */
