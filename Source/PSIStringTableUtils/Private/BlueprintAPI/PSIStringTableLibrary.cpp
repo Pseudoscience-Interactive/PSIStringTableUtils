@@ -200,7 +200,7 @@ bool UPSIStringTableLibrary::SetStringTableSourceString(FPSIStringTableEntryHand
     if (bPreserveData)
     {
         const FStringTableEntryConstPtr StringTableEntry = StringTable->FindEntry(TextKey);
-        if (StringTable.IsValid())
+        if (StringTableEntry.IsValid())
         {
             TArray<TTuple<FName, FString>> MetaData;
             StringTable->EnumerateMetaData(TextKey, [&MetaData](FName MetaDataId, const FString& MetaDataValue)

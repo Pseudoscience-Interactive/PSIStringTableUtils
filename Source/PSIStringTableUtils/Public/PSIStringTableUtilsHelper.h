@@ -80,7 +80,7 @@ namespace FPSIStringTableUtilsHelper
     }
     
     /** Checks whether any metadata is associated with the specified string table entry. */
-    bool DoesStringTableEntryHasMetaData(const FStringTableConstPtr& StringTable, const FTextKey& Key);
+    bool PSISTRINGTABLEUTILS_API DoesStringTableEntryHasMetaData(const FStringTableConstPtr& StringTable, const FTextKey& Key);
     
 #if WITH_EDITOR
     /** 

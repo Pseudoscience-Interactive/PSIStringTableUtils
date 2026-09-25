@@ -108,7 +108,7 @@ public:
      * @param StructValue The output struct to store the metadata values.
      * @param RetrievedValues The total number of metadata values retrieved.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, CustomThunk, meta = (DisplayName="Get String Table Entry Meta-Data as Stuct", CustomStructureParam = "StructValue", AdvancedDisplay = RetrievedValues))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, CustomThunk, meta = (DisplayName="Get String Table Entry Meta-Data as Struct", CustomStructureParam = "StructValue", AdvancedDisplay = RetrievedValues))
     static void GetStringTableEntryMetaDataAsStruct(FPSIStringTableEntryHandle Entry, FGenericStruct& StructValue, int32& RetrievedValues);
     DECLARE_FUNCTION(execGetStringTableEntryMetaDataAsStruct);
 
@@ -159,7 +159,7 @@ public:
      * @param StructValue The struct containing metadata values to be set for the string table entry.
      * @return True, if the metadata was successfully set; false, if the string table or the entry do not exist.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, CustomThunk, meta = (DisplayName="Set String Table Entry Meta-Data from Stuct", CustomStructureParam = "StructValue", AdvancedDisplay = ReturnValue))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, CustomThunk, meta = (DisplayName="Set String Table Entry Meta-Data from Struct", CustomStructureParam = "StructValue", AdvancedDisplay = ReturnValue))
     static bool SetStringTableEntryMetaDataFromStruct(FPSIStringTableEntryHandle Entry, const FGenericStruct& StructValue);
     DECLARE_FUNCTION(execSetStringTableEntryMetaDataFromStruct);
     
@@ -250,7 +250,7 @@ public:
      * @return True, if this handle has valid values, the String Table it's referring to is loaded, and the String 
      * Table has an Entry for the key of this handle; false, otherwise.
      */
-    UFUNCTION(Category = "PSI/StringTable|StringTableEntryHandle")
+    UFUNCTION(Category = "PSI/StringTable|StringTableEntryHandle", BlueprintPure)
     static bool IsValidStringTableEntryHandle(const FPSIStringTableEntryHandle& Entry);
     
     UFUNCTION(Category = "PSI/StringTable|StringTableEntryHandle", BlueprintPure)

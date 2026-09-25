@@ -30,6 +30,8 @@ bool FPSIStringTableUtils_LibraryIsRegisteredTest::RunTest(const FString& Parame
         UPSIStringTableLibrary::IsStringTableEntryRegistered(MissingEntry));
     TestTrue(TEXT("'IsValidStringTableEntryHandle' agrees with 'IsStringTableEntryRegistered'"),
         UPSIStringTableLibrary::IsValidStringTableEntryHandle(ValidEntry));
+    TestFalse(TEXT("'IsValidStringTableEntryHandle' is false for a missing entry"),
+        UPSIStringTableLibrary::IsValidStringTableEntryHandle(MissingEntry));
 
     return true;
 }
@@ -73,6 +75,36 @@ bool FPSIStringTableUtils_LibrarySourceStringTest::RunTest(const FString& Parame
     const FPSIStringTableEntryHandle EmptyKeyEntry(TableScope.TableId, FString());
     const bool bEmptyKeyResult = UPSIStringTableLibrary::SetStringTableSourceString(EmptyKeyEntry, TEXT("Hello"), false);
     TestFalse(TEXT("'SetStringTableSourceString' rejects an empty key instead of crashing"), bEmptyKeyResult);
+#else
+    AddInfo(TEXT("Skipped: 'SetStringTableSourceString' is only available 'WITH_EDITOR'."));
+#endif
+
+    return true;
+}
+
+// Also covers the regression for a bug where 'bPreserveData' crashed the editor for a key that did not exist yet.
+// The missing entry was dereferenced to read its dev notes because the wrong pointer was null-checked.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibrarySourceStringPreserveDataTest, "PSIStringTableUtils.Library.SourceStringPreserveData",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FPSIStringTableUtils_LibrarySourceStringPreserveDataTest::RunTest(const FString& Parameters)
+{
+#if WITH_EDITOR
+    const FPSIStringTableUtilsTestTableScope TableScope(TEXT("LibrarySourceStringPreserveData"));
+
+    const FPSIStringTableEntryHandle Entry(TableScope.TableId, FString(TEXT("NewKey")));
+    const bool bNewResult = UPSIStringTableLibrary::SetStringTableSourceString(Entry, TEXT("Hello"), true);
+    TestTrue(TEXT("'SetStringTableSourceString' with 'bPreserveData' creates a missing entry instead of crashing"), bNewResult);
+    TestEqual(TEXT("The new entry has the source string that was set"),
+        UPSIStringTableLibrary::GetStringTableSourceString(Entry), FString(TEXT("Hello")));
+
+    UPSIStringTableLibrary::SetStringTableEntryMetaData(Entry, FName(TEXT("MetaId")), TEXT("MetaValue"));
+    const bool bUpdateResult = UPSIStringTableLibrary::SetStringTableSourceString(Entry, TEXT("World"), true);
+    TestTrue(TEXT("'SetStringTableSourceString' with 'bPreserveData' succeeds for an existing entry"), bUpdateResult);
+    TestEqual(TEXT("The existing entry has the new source string"),
+        UPSIStringTableLibrary::GetStringTableSourceString(Entry), FString(TEXT("World")));
+    TestEqual(TEXT("The existing entry keeps its meta-data"),
+        UPSIStringTableLibrary::GetStringTableEntryMetaData(Entry, FName(TEXT("MetaId"))), FString(TEXT("MetaValue")));
 #else
     AddInfo(TEXT("Skipped: 'SetStringTableSourceString' is only available 'WITH_EDITOR'."));
 #endif
