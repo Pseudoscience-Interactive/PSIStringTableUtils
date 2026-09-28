@@ -16,6 +16,7 @@ void FPSIStringTableIdTypeCustomization::CustomizeHeader(TSharedRef<IPropertyHan
     [
         SNew(SPSIStringTableId)
         .StructPropertyHandle(StructPropertyHandle)
+        .IncludeEmptyStringTables(true)
     ];
 }
 

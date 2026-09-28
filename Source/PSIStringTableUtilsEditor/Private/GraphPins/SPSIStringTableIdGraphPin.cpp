@@ -38,7 +38,8 @@ TSharedRef<SWidget> SPSIStringTableIdGraphPin::GetDefaultValueWidget()
         [
             FPSIStringTableEditorHelper::MakeStringTableSelector(
                 FOnGetPropertyComboBoxValue::CreateSP(this, &SPSIStringTableIdGraphPin::OnGetTableIdValue),
-                FOnPropertyComboBoxValueSelected::CreateSP(this, &SPSIStringTableIdGraphPin::OnSetTableIdValue))
+                FOnPropertyComboBoxValueSelected::CreateSP(this, &SPSIStringTableIdGraphPin::OnSetTableIdValue),
+                /*bAllowClear*/ true, /*ShowSearchForItemCount*/ 20, /*bIncludeEmptyStringTables*/ true)
         ];
 }
 
@@ -50,7 +51,7 @@ FString SPSIStringTableIdGraphPin::OnGetTableIdValue() const
 void SPSIStringTableIdGraphPin::OnSetTableIdValue(const FString& NewValue)
 {
     FName TableId;
-    FPSIStringTableHelper::FindStringTableByName(*NewValue, &TableId);
+    FPSIStringTableHelper::FindStringTableByName(*NewValue, &TableId, /*bIncludeEmptyStringTables*/ true);
     StringTableId.Name = TableId;
     
     const FString TableIdString = TableId.ToString();
