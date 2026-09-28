@@ -101,11 +101,11 @@ bool UPSIStringTableLibrary::ExportStringTableToCSVString(FPSIStringTableId Tabl
     return false;
 }
 
-bool UPSIStringTableLibrary::ExportStringTableToCSVFile(FPSIStringTableId TableId, const FString& Filename)
+bool UPSIStringTableLibrary::ExportStringTableToCSVFile(FPSIStringTableId TableId, const FString& CSVFilePath)
 {
     if (const FStringTableConstPtr StringTable = TableId.GetStringTable())
     {
-        return StringTable->ExportStringsToCSVFile(Filename);
+        return StringTable->ExportStringsToCSVFile(CSVFilePath);
     }
 
     return false;
@@ -121,11 +121,11 @@ bool UPSIStringTableLibrary::ImportStringTableFromCSVString(FPSIStringTableId Ta
     return false;
 }
 
-bool UPSIStringTableLibrary::ImportStringTableFromCSVFile(FPSIStringTableId TableId, const FString& Filename)
+bool UPSIStringTableLibrary::ImportStringTableFromCSVFile(FPSIStringTableId TableId, const FString& CSVFilePath)
 {
     if (const FStringTablePtr StringTable = TableId.GetStringTable())
     {
-        return StringTable->ImportStringsFromCSVFile(Filename);
+        return StringTable->ImportStringsFromCSVFile(CSVFilePath);
     }
 
     return false;

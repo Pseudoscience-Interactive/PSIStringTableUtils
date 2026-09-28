@@ -84,17 +84,31 @@ public:
     UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName="Export String Table to CSV String"))
     static bool ExportStringTableToCSVString(FPSIStringTableId TableId, FString& OutCSVString);
 
-    /** Export the key, string, and meta-data information in the given string table to a CSV file (does not export the namespace) */
+    /**
+     * Export the key, string, and meta-data information in the given string table to a CSV file (does not export the namespace)
+     * @param TableId The ID of the string table.
+     * @param CSVFilePath The path of the CSV file to write, e.g. "D:/Exports/MyTable.csv". A relative path or a plain
+     * file name is resolved against the engine's Binaries folder, not the project folder. Use Get Project Directory or
+     * Get Project Saved Directory and Append to target the project folder.
+     * @return True if the file was written; false, otherwise.
+     */
     UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName="Export String Table to CSV File"))
-    static bool ExportStringTableToCSVFile(FPSIStringTableId TableId, const FString& Filename);
+    static bool ExportStringTableToCSVFile(FPSIStringTableId TableId, const FString& CSVFilePath);
 
     /** Import key, string, and meta-data information from a CSV string to the given string table (does not import the namespace) */
     UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName="Import String Table from CSV String"))
     static bool ImportStringTableFromCSVString(FPSIStringTableId TableId, const FString& CSVString);
 
-    /** Import key, string, and meta-data information from a CSV file to the given string table (does not import the namespace) */
+    /**
+     * Import key, string, and meta-data information from a CSV file to the given string table (does not import the namespace)
+     * @param TableId The ID of the string table.
+     * @param CSVFilePath The path of the CSV file to read, e.g. "D:/Exports/MyTable.csv". A relative path or a plain
+     * file name is resolved against the engine's Binaries folder, not the project folder. Use Get Project Directory or
+     * Get Project Saved Directory and Append to target the project folder.
+     * @return True if the file was read and imported; false, otherwise.
+     */
     UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName="Import String Table from CSV File"))
-    static bool ImportStringTableFromCSVFile(FPSIStringTableId TableId, const FString& Filename);
+    static bool ImportStringTableFromCSVFile(FPSIStringTableId TableId, const FString& CSVFilePath);
     
     /**
      * Gets the metadata of a specific string table entry as property values of a given struct. Each property of the 
