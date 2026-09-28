@@ -30,15 +30,14 @@ public class PSIStringTableUtils : ModuleRules
                 "Core",
                 "CoreUObject",
                 "Engine",
-                "UnrealEd",
             }
         );
 
         PrivateDependencyModuleNames.AddRange(
             new string[]
             {
-
+                "AssetRegistry",
             }
-        );        
+        );
     }
 }
