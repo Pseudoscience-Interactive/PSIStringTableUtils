@@ -13,7 +13,7 @@ struct FGenericStruct;
 /**
  * Blueprint API to modify String Tables and to make it easier to retrieve their metadata.
  */
-UCLASS(DisplayName="PSI String Table Library")
+UCLASS(DisplayName = "PSI String Table Library")
 class UPSIStringTableLibrary : public UBlueprintFunctionLibrary
 {
     GENERATED_BODY()
@@ -62,7 +62,7 @@ public:
      * @return The metadata value, if the string table entry was found and has the specific metadata or an empty string 
      * otherwise.
      */
-    UFUNCTION(BlueprintPure, Category = "PSI/StringTable", meta = (DisplayName="Get String Table Entry Meta-Data"))
+    UFUNCTION(BlueprintPure, Category = "PSI/StringTable", meta = (DisplayName = "Get String Table Entry Meta-Data"))
     static FString GetStringTableEntryMetaData(FPSIStringTableEntryHandle Entry, const FName MetaDataId);
 
     /** 
@@ -77,37 +77,39 @@ public:
      * @param Entry Handle of the string table entry.
      * @return The metadata IDs, if the string table entry was found and has metadata or an empty array otherwise.
      */
-    UFUNCTION(BlueprintPure, Category = "PSI/StringTable", meta = (DisplayName="Get Meta-Data IDs from String Table Entry"))
+    UFUNCTION(BlueprintPure, Category = "PSI/StringTable", meta = (DisplayName = "Get Meta-Data IDs from String Table Entry"))
     static TArray<FName> GetMetaDataIdsFromStringTableEntry(FPSIStringTableEntryHandle Entry);
     
     /** Export the key, string, and meta-data information in the given string table to a CSV string (does not export the namespace) */
-    UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName="Export String Table to CSV String"))
+    UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName = "Export String Table to CSV String"))
     static bool ExportStringTableToCSVString(FPSIStringTableId TableId, FString& OutCSVString);
 
     /**
      * Export the key, string, and meta-data information in the given string table to a CSV file (does not export the namespace)
      * @param TableId The ID of the string table.
-     * @param CSVFilePath The path of the CSV file to write, e.g. "D:/Exports/MyTable.csv". A relative path or a plain
-     * file name is resolved against the engine's Binaries folder, not the project folder. Use Get Project Directory or
-     * Get Project Saved Directory and Append to target the project folder.
+     * @param CSVFilePath The path of the CSV file to write. Build it with Get Project Saved Directory and Append, e.g.
+     * "<Saved>/Exports/MyTable.csv", which works on every platform. Absolute paths like "D:/Exports/MyTable.csv" only
+     * work on desktop platforms. A relative path is resolved against the engine's Binaries folder on desktop
+     * platforms. Mobile platforms redirect every path into the app's own storage.
      * @return True if the file was written; false, otherwise.
      */
-    UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName="Export String Table to CSV File"))
+    UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName = "Export String Table to CSV File"))
     static bool ExportStringTableToCSVFile(FPSIStringTableId TableId, const FString& CSVFilePath);
 
     /** Import key, string, and meta-data information from a CSV string to the given string table (does not import the namespace) */
-    UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName="Import String Table from CSV String"))
+    UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName = "Import String Table from CSV String"))
     static bool ImportStringTableFromCSVString(FPSIStringTableId TableId, const FString& CSVString);
 
     /**
      * Import key, string, and meta-data information from a CSV file to the given string table (does not import the namespace)
      * @param TableId The ID of the string table.
-     * @param CSVFilePath The path of the CSV file to read, e.g. "D:/Exports/MyTable.csv". A relative path or a plain
-     * file name is resolved against the engine's Binaries folder, not the project folder. Use Get Project Directory or
-     * Get Project Saved Directory and Append to target the project folder.
+     * @param CSVFilePath The path of the CSV file to read. Build it with Get Project Saved Directory and Append, e.g.
+     * "<Saved>/Exports/MyTable.csv", which works on every platform. Absolute paths like "D:/Exports/MyTable.csv" only
+     * work on desktop platforms. A relative path is resolved against the engine's Binaries folder on desktop
+     * platforms. Mobile platforms redirect every path into the app's own storage.
      * @return True if the file was read and imported; false, otherwise.
      */
-    UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName="Import String Table from CSV File"))
+    UFUNCTION(BlueprintCallable, Category = "PSI/StringTable", meta = (DisplayName = "Import String Table from CSV File"))
     static bool ImportStringTableFromCSVFile(FPSIStringTableId TableId, const FString& CSVFilePath);
     
     /**
@@ -122,7 +124,7 @@ public:
      * @param StructValue The output struct to store the metadata values.
      * @param RetrievedValues The total number of metadata values retrieved.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, CustomThunk, meta = (DisplayName="Get String Table Entry Meta-Data as Struct", CustomStructureParam = "StructValue", AdvancedDisplay = RetrievedValues))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, CustomThunk, meta = (DisplayName = "Get String Table Entry Meta-Data as Struct", CustomStructureParam = "StructValue", AdvancedDisplay = RetrievedValues))
     static void GetStringTableEntryMetaDataAsStruct(FPSIStringTableEntryHandle Entry, FGenericStruct& StructValue, int32& RetrievedValues);
     DECLARE_FUNCTION(execGetStringTableEntryMetaDataAsStruct);
 
@@ -138,7 +140,7 @@ public:
      * @param StructValueRef The output struct to store the metadata values.
      * @param RetrievedValues The total number of metadata values retrieved.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, CustomThunk, meta = (DisplayName="Populate Struct with String Table Entry Meta-Data", CustomStructureParam = "StructValueRef", AdvancedDisplay = RetrievedValues))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, CustomThunk, meta = (DisplayName = "Populate Struct with String Table Entry Meta-Data", CustomStructureParam = "StructValueRef", AdvancedDisplay = RetrievedValues))
     static void PopulateStructWithStringTableEntryMetaData(FPSIStringTableEntryHandle Entry, UPARAM(ref) FGenericStruct& StructValueRef, int32& RetrievedValues);
     DECLARE_FUNCTION(execPopulateStructWithStringTableEntryMetaData);
     
@@ -151,7 +153,7 @@ public:
      * @param bPreserveData Whether any existing data for that entry should be preserved.
      * @return True, if the source string was successfully set; false, if the string table or the entry do not exist.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName="Set String Table Source String", AdvancedDisplay = bPreserveData))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName = "Set String Table Source String", AdvancedDisplay = bPreserveData))
     static bool SetStringTableSourceString(FPSIStringTableEntryHandle Entry, const FString& InSourceString, bool bPreserveData);
 
     /**
@@ -161,7 +163,7 @@ public:
      * @param Entry Handle of the string table entry.
      * @return True, if the entry was successfully removed; false, if the string table or the entry do not exist.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName="Remove String Table Entry"))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName = "Remove String Table Entry"))
     static bool RemoveStringTableEntry(FPSIStringTableEntryHandle Entry);
     
     /** 
@@ -173,7 +175,7 @@ public:
      * @param StructValue The struct containing metadata values to be set for the string table entry.
      * @return True, if the metadata was successfully set; false, if the string table or the entry do not exist.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, CustomThunk, meta = (DisplayName="Set String Table Entry Meta-Data from Struct", CustomStructureParam = "StructValue", AdvancedDisplay = ReturnValue))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, CustomThunk, meta = (DisplayName = "Set String Table Entry Meta-Data from Struct", CustomStructureParam = "StructValue", AdvancedDisplay = ReturnValue))
     static bool SetStringTableEntryMetaDataFromStruct(FPSIStringTableEntryHandle Entry, const FGenericStruct& StructValue);
     DECLARE_FUNCTION(execSetStringTableEntryMetaDataFromStruct);
     
@@ -185,7 +187,7 @@ public:
      * @param MetaDataValue The value of the metadata to be set.
      * @return True, if the metadata was successfully set; false, if the string table or the entry do not exist.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName="Set String Table Entry Meta-Data"))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName = "Set String Table Entry Meta-Data"))
     static bool SetStringTableEntryMetaData(FPSIStringTableEntryHandle Entry, const FName MetaDataId, FString MetaDataValue);
 
     /**
@@ -195,7 +197,7 @@ public:
      * @param MetaDataId The identifier of the metadata to be removed.
      * @return True, if the metadata was successfully removed; false, if the string table, the entry, or the metadata do not exist.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName="Remove String Table Entry Meta-Data"))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName = "Remove String Table Entry Meta-Data"))
     static bool RemoveStringTableEntryMetaData(FPSIStringTableEntryHandle Entry, const FName MetaDataId);
 
     /**
@@ -204,7 +206,7 @@ public:
      * @param Entry Handle of the string table entry.
      * @return True, if the metadata was successfully removed; false, if the string table, the entry, or the metadata do not exist.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName="Clear Meta-Data from String Table Entry"))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName = "Clear Meta-Data from String Table Entry"))
     static bool ClearMetaDataFromStringTableEntry(FPSIStringTableEntryHandle Entry);
 
     /**
@@ -212,7 +214,7 @@ public:
      *
      * @param TableId The ID of the string table.
      */
-    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName="Clear String Table Meta-Data"))
+    UFUNCTION(Category = "PSI/StringTable", BlueprintCallable, meta = (DisplayName = "Clear String Table Meta-Data"))
     static void ClearStringTableMetaData(FPSIStringTableId TableId);
     
     /**
@@ -241,7 +243,7 @@ public:
      * @param StringTable The string table asset.
      * @return The ID of the string table.
      */
-    UFUNCTION(BlueprintPure, Category = "PSI/StringTable|StringTableID", meta = (DisplayName="Get String Table ID"))
+    UFUNCTION(BlueprintPure, Category = "PSI/StringTable|StringTableID", meta = (DisplayName = "Get String Table ID"))
     static FPSIStringTableId GetStringTableId(const UStringTable* StringTable);
     
     /** Creates a literal String Table ID. */
@@ -253,7 +255,7 @@ public:
     static bool EqualEqual_StringTableId(FPSIStringTableId A, FPSIStringTableId B);
     
     /** Returns true if the values are not equal (A != B). */
-    UFUNCTION(Category = "PSI/StringTable|StringTableID", BlueprintPure, meta=(DisplayName="Not Equal (StringTableID)", CompactNodeTitle = "!="))
+    UFUNCTION(Category = "PSI/StringTable|StringTableID", BlueprintPure, meta=(DisplayName = "Not Equal (StringTableID)", CompactNodeTitle = "!="))
     static bool NotEqual_StringTableId(FPSIStringTableId A, FPSIStringTableId B);
     
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -279,6 +281,6 @@ public:
     static bool EqualEqual_StringTableEntryHandle(FPSIStringTableEntryHandle A, FPSIStringTableEntryHandle B);
     
     /** Returns true if the values are not equal (A != B). */
-    UFUNCTION(Category = "PSI/StringTable|StringTableEntryHandle", BlueprintPure, meta=(DisplayName="Not Equal (StringTableEntryHandle)", CompactNodeTitle = "!="))
+    UFUNCTION(Category = "PSI/StringTable|StringTableEntryHandle", BlueprintPure, meta=(DisplayName = "Not Equal (StringTableEntryHandle)", CompactNodeTitle = "!="))
     static bool NotEqual_StringTableEntryHandle(FPSIStringTableEntryHandle A, FPSIStringTableEntryHandle B);
 };

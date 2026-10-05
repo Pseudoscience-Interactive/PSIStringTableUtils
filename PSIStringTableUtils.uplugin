@@ -21,7 +21,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
-				"Win64", "Mac", "Linux"
+				"Win64", "Mac", "Linux", "LinuxArm64", "Android", "IOS", "TVOS", "VisionOS"
 			]
 		},
 		{

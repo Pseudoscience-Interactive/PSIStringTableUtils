@@ -4,10 +4,15 @@
 #include "PSIEngineVersionComparison.h"
 #include "PSIStringTableEntryHandle.h"
 #include "PSIStringTableUtilsHelper.h"
-#include "Blueprint/BlueprintExceptionInfo.h"
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
+#include "UObject/Script.h"
 #include "UObject/TextProperty.h"
+
+// 'FBlueprintExceptionInfo' moved out of 'UObject/Script.h' in UE 5.4.
+#if PSI_VERSION_NEWER_THAN_OR_EQUAL(5, 4, 0)
+#include "Blueprint/BlueprintExceptionInfo.h"
+#endif
 
 #define LOCTEXT_NAMESPACE "PSIStringTableUtils"
 
@@ -94,7 +99,7 @@ bool UPSIStringTableLibrary::ExportStringTableToCSVString(FPSIStringTableId Tabl
 {
     if (const FStringTableConstPtr StringTable = TableId.GetStringTable())
     {
-        OutCSVString = StringTable->ExportStringsToCSVString();
+        OutCSVString = FPSIStringTableUtilsHelper::ExportStringTableToCSVString(StringTable);
         return true;
     }
 
@@ -103,32 +108,18 @@ bool UPSIStringTableLibrary::ExportStringTableToCSVString(FPSIStringTableId Tabl
 
 bool UPSIStringTableLibrary::ExportStringTableToCSVFile(FPSIStringTableId TableId, const FString& CSVFilePath)
 {
-    if (const FStringTableConstPtr StringTable = TableId.GetStringTable())
-    {
-        return StringTable->ExportStringsToCSVFile(CSVFilePath);
-    }
-
-    return false;
+    return FPSIStringTableUtilsHelper::ExportStringTableToCSVFile(TableId.GetStringTable(), CSVFilePath);
 }
 
 bool UPSIStringTableLibrary::ImportStringTableFromCSVString(FPSIStringTableId TableId, const FString& CSVString)
 {
-    if (const FStringTablePtr StringTable = TableId.GetStringTable())
-    {
-        return StringTable->ImportStringsFromCSVString(CSVString, *TableId.ToString());
-    }
-
-    return false;
+    return FPSIStringTableUtilsHelper::ImportStringTableFromCSVString(TableId.GetStringTable(), CSVString,
+        *TableId.ToString());
 }
 
 bool UPSIStringTableLibrary::ImportStringTableFromCSVFile(FPSIStringTableId TableId, const FString& CSVFilePath)
 {
-    if (const FStringTablePtr StringTable = TableId.GetStringTable())
-    {
-        return StringTable->ImportStringsFromCSVFile(CSVFilePath);
-    }
-
-    return false;
+    return FPSIStringTableUtilsHelper::ImportStringTableFromCSVFile(TableId.GetStringTable(), CSVFilePath);
 }
 
 void UPSIStringTableLibrary::GetStringTableEntryMetaDataAsStruct(FPSIStringTableEntryHandle, FGenericStruct&, int32&)
@@ -228,7 +219,7 @@ bool UPSIStringTableLibrary::SetStringTableSourceString(FPSIStringTableEntryHand
         }
     }
 
-#if WITH_EDITORONLY_DATA
+#if PSI_VERSION_NEWER_THAN_OR_EQUAL(5, 8, 0) && WITH_EDITORONLY_DATA
     StringTable->SetSourceString(TextKey, InSourceString, FString());
 #else
     StringTable->SetSourceString(TextKey, InSourceString);

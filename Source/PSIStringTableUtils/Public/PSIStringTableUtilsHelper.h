@@ -81,7 +81,45 @@ namespace FPSIStringTableUtilsHelper
     
     /** Checks whether any metadata is associated with the specified string table entry. */
     bool PSISTRINGTABLEUTILS_API DoesStringTableEntryHasMetaData(const FStringTableConstPtr& StringTable, const FTextKey& Key);
-    
+
+    /**
+     * Exports the keys, source strings, and metadata of the specified string table to a CSV string. Works on every
+     * supported engine version, even though the engine only provides this function since UE 5.8.
+     *
+     * @param StringTable The string table.
+     * @return The CSV string. Empty if the string table is invalid.
+     */
+    FString PSISTRINGTABLEUTILS_API ExportStringTableToCSVString(const FStringTableConstPtr& StringTable);
+
+    /**
+     * Exports the keys, source strings, and metadata of the specified string table to a CSV file.
+     *
+     * @param StringTable The string table.
+     * @param FilePath The path of the CSV file to write.
+     * @return True, if the file was written; false, otherwise.
+     */
+    bool PSISTRINGTABLEUTILS_API ExportStringTableToCSVFile(const FStringTableConstPtr& StringTable, const FString& FilePath);
+
+    /**
+     * Replaces the entries of the specified string table with the ones in a CSV string. Works on every supported
+     * engine version, even though the engine only provides this function since UE 5.8.
+     *
+     * @param StringTable The string table.
+     * @param CSVString The CSV string with at least a "Key" and a "SourceString" column.
+     * @param ErrorContext The name used to identify the CSV string in warnings.
+     * @return True, if the CSV string was imported; false, otherwise.
+     */
+    bool PSISTRINGTABLEUTILS_API ImportStringTableFromCSVString(const FStringTablePtr& StringTable, const FString& CSVString, const TCHAR* ErrorContext);
+
+    /**
+     * Replaces the entries of the specified string table with the ones in a CSV file.
+     *
+     * @param StringTable The string table.
+     * @param FilePath The path of the CSV file to read.
+     * @return True, if the file was read and imported; false, otherwise.
+     */
+    bool PSISTRINGTABLEUTILS_API ImportStringTableFromCSVFile(const FStringTablePtr& StringTable, const FString& FilePath);
+
 #if WITH_EDITOR
     /** 
      * Notifies that the 'OwnerAsset' of the specified string table has been changed. Does nothing if the string table 

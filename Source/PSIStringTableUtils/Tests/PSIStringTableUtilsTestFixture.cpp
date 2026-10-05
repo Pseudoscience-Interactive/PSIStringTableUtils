@@ -4,6 +4,7 @@
 #include "Internationalization/StringTableCore.h"
 #include "Internationalization/StringTableRegistry.h"
 #include "Misc/Guid.h"
+#include "PSIEngineVersionComparison.h"
 
 FPSIStringTableUtilsTestTableScope::FPSIStringTableUtilsTestTableScope(const FString& DebugName)
     : TableId(*FString::Printf(TEXT("%s_%s"), *DebugName, *FGuid::NewGuid().ToString(EGuidFormats::Digits)))
@@ -19,7 +20,7 @@ FPSIStringTableUtilsTestTableScope::~FPSIStringTableUtilsTestTableScope()
 
 void FPSIStringTableUtilsTestTableScope::SetSourceString(const FString& Key, const FString& SourceString) const
 {
-#if WITH_EDITORONLY_DATA
+#if PSI_VERSION_NEWER_THAN_OR_EQUAL(5, 8, 0) && WITH_EDITORONLY_DATA
     StringTable->SetSourceString(Key, SourceString, FString());
 #else
     StringTable->SetSourceString(Key, SourceString);

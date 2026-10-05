@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PSIEngineVersionComparison.h"
 #include "PSIStringTableId.h"
 #include "PSIStringTableEntryHandle.generated.h"
 
@@ -46,7 +47,11 @@ struct PSISTRINGTABLEUTILS_API FPSIStringTableEntryHandle
      */ 
     FPSIStringTableEntryHandle(const FName& InTableId, const FTextKey& InKey)
         : TableId(InTableId)
+#if PSI_VERSION_NEWER_THAN_OR_EQUAL(5, 5, 0)
         , Key(InKey.ToString())
+#else
+        , Key(InKey.GetChars())
+#endif
     {}
     
     /** Returns true if this handle is specifically pointing to nothing */

@@ -17,7 +17,7 @@ struct FPSIStringTableUtilsTestTableScope
     FPSIStringTableUtilsTestTableScope(const FPSIStringTableUtilsTestTableScope&) = delete;
     FPSIStringTableUtilsTestTableScope& operator=(const FPSIStringTableUtilsTestTableScope&) = delete;
 
-    /** Sets the source string of the given entry, hiding the 'WITH_EDITORONLY_DATA'-dependent dev-notes argument. */
+    /** Sets the source string of the given entry, hiding the dev-notes argument that only exists since UE 5.8 with editor-only data. */
     void SetSourceString(const FString& Key, const FString& SourceString) const;
 
     FName TableId;

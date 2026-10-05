@@ -17,7 +17,7 @@ void SPSIStringTableIdGraphPin::ParseDefaultValueData()
 {
     StringTableId.Reset();
     
-    const UScriptStruct* Struct = FPSIStringTableId::StaticStruct();
+    UScriptStruct* Struct = FPSIStringTableId::StaticStruct();
     
     FOutputDeviceNull NullOut;
     Struct->ImportText(*GraphPinObj->GetDefaultAsString(), &StringTableId, nullptr, PPF_SerializedAsImportText,

@@ -36,6 +36,7 @@ public class PSIStringTableUtilsEditor : ModuleRules
                 "Engine",
                 "Core",
                 "CoreUObject",
+                "AssetRegistry",
                 "Slate",
                 "SlateCore",
                 "PropertyEditor",
