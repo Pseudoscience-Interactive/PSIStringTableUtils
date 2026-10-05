@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PSIRequires.h"
-#include "PSITypeTraits.h"
+#include "PSIIsScriptStruct.h"
 
 /**
  * Helper functions to modify String Tables and to make it easier to retrieve their metadata.
