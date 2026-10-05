@@ -1,0 +1,3 @@
+# Written by SyncSharedHeaders.bat from the PSISharedHeaders repository.
+# Keeps git from changing the line endings of the copy, whose tree hashes must match PSISharedHeaders.
+* -text
