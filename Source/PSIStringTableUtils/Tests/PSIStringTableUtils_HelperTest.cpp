@@ -10,7 +10,7 @@
 
 // Regression test for a bug where 'bHasMetaData' was left uninitialized when an entry had no meta-data,
 // so the function could return garbage instead of reliably reporting 'false'.
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_HelperDoesEntryHaveMetaDataTest, "PSIStringTableUtils.Helper.DoesEntryHaveMetaData",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_HelperDoesEntryHaveMetaDataTest, "PSI.StringTableUtils.Helper.DoesEntryHaveMetaData",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_HelperDoesEntryHaveMetaDataTest::RunTest(const FString& Parameters)
@@ -36,7 +36,7 @@ bool FPSIStringTableUtils_HelperDoesEntryHaveMetaDataTest::RunTest(const FString
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_HelperMetaDataAsStructRoundTripTest, "PSIStringTableUtils.Helper.MetaDataAsStructRoundTrip",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_HelperMetaDataAsStructRoundTripTest, "PSI.StringTableUtils.Helper.MetaDataAsStructRoundTrip",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_HelperMetaDataAsStructRoundTripTest::RunTest(const FString& Parameters)

@@ -8,7 +8,7 @@
 
 #if WITH_DEV_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_IdDefaultsTest, "PSIStringTableUtils.Id.Defaults",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_IdDefaultsTest, "PSI.StringTableUtils.Id.Defaults",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_IdDefaultsTest::RunTest(const FString& Parameters)
@@ -30,7 +30,7 @@ bool FPSIStringTableUtils_IdDefaultsTest::RunTest(const FString& Parameters)
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_IdEqualityTest, "PSIStringTableUtils.Id.Equality",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_IdEqualityTest, "PSI.StringTableUtils.Id.Equality",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_IdEqualityTest::RunTest(const FString& Parameters)
@@ -47,7 +47,7 @@ bool FPSIStringTableUtils_IdEqualityTest::RunTest(const FString& Parameters)
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_IdImportExportTextTest, "PSIStringTableUtils.Id.ImportExportText",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_IdImportExportTextTest, "PSI.StringTableUtils.Id.ImportExportText",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_IdImportExportTextTest::RunTest(const FString& Parameters)
@@ -67,7 +67,7 @@ bool FPSIStringTableUtils_IdImportExportTextTest::RunTest(const FString& Paramet
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_IdStringTableLookupTest, "PSIStringTableUtils.Id.StringTableLookup",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_IdStringTableLookupTest, "PSI.StringTableUtils.Id.StringTableLookup",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_IdStringTableLookupTest::RunTest(const FString& Parameters)

@@ -7,7 +7,7 @@
 
 #if WITH_DEV_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_EntryHandleDefaultsTest, "PSIStringTableUtils.EntryHandle.Defaults",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_EntryHandleDefaultsTest, "PSI.StringTableUtils.EntryHandle.Defaults",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_EntryHandleDefaultsTest::RunTest(const FString& Parameters)
@@ -28,7 +28,7 @@ bool FPSIStringTableUtils_EntryHandleDefaultsTest::RunTest(const FString& Parame
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_EntryHandleEqualityTest, "PSIStringTableUtils.EntryHandle.Equality",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_EntryHandleEqualityTest, "PSI.StringTableUtils.EntryHandle.Equality",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_EntryHandleEqualityTest::RunTest(const FString& Parameters)
@@ -47,7 +47,7 @@ bool FPSIStringTableUtils_EntryHandleEqualityTest::RunTest(const FString& Parame
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_EntryHandleStringTableLookupTest, "PSIStringTableUtils.EntryHandle.StringTableLookup",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_EntryHandleStringTableLookupTest, "PSI.StringTableUtils.EntryHandle.StringTableLookup",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_EntryHandleStringTableLookupTest::RunTest(const FString& Parameters)
@@ -77,7 +77,7 @@ bool FPSIStringTableUtils_EntryHandleStringTableLookupTest::RunTest(const FStrin
 // Regression test for a bug where 'GetStringTableEntryHandleFromText'/the 'FText' constructor discarded the
 // values it read into a throwaway local instead of writing them onto '*this', so the resulting handle was
 // always empty.
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_EntryHandleFromTextTest, "PSIStringTableUtils.EntryHandle.FromText",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_EntryHandleFromTextTest, "PSI.StringTableUtils.EntryHandle.FromText",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_EntryHandleFromTextTest::RunTest(const FString& Parameters)

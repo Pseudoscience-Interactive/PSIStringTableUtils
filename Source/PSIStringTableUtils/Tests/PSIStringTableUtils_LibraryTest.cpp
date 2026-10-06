@@ -9,7 +9,7 @@
 
 #if WITH_DEV_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryIsRegisteredTest, "PSIStringTableUtils.Library.IsRegistered",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryIsRegisteredTest, "PSI.StringTableUtils.Library.IsRegistered",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_LibraryIsRegisteredTest::RunTest(const FString& Parameters)
@@ -36,7 +36,7 @@ bool FPSIStringTableUtils_LibraryIsRegisteredTest::RunTest(const FString& Parame
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryNamespaceTest, "PSIStringTableUtils.Library.Namespace",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryNamespaceTest, "PSI.StringTableUtils.Library.Namespace",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_LibraryNamespaceTest::RunTest(const FString& Parameters)
@@ -58,7 +58,7 @@ bool FPSIStringTableUtils_LibraryNamespaceTest::RunTest(const FString& Parameter
 // Also covers the regression for a bug where an empty key crashed the editor: the engine's
 // 'FStringTable::SetSourceString' asserts that the key is non-empty, so passing an entry handle with a
 // valid table but an empty key has to be rejected before reaching it.
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibrarySourceStringTest, "PSIStringTableUtils.Library.SourceString",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibrarySourceStringTest, "PSI.StringTableUtils.Library.SourceString",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_LibrarySourceStringTest::RunTest(const FString& Parameters)
@@ -84,7 +84,7 @@ bool FPSIStringTableUtils_LibrarySourceStringTest::RunTest(const FString& Parame
 
 // Also covers the regression for a bug where 'bPreserveData' crashed the editor for a key that did not exist yet.
 // The missing entry was dereferenced to read its dev notes because the wrong pointer was null-checked.
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibrarySourceStringPreserveDataTest, "PSIStringTableUtils.Library.SourceStringPreserveData",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibrarySourceStringPreserveDataTest, "PSI.StringTableUtils.Library.SourceStringPreserveData",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_LibrarySourceStringPreserveDataTest::RunTest(const FString& Parameters)
@@ -112,7 +112,7 @@ bool FPSIStringTableUtils_LibrarySourceStringPreserveDataTest::RunTest(const FSt
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryKeysAndRemoveTest, "PSIStringTableUtils.Library.KeysAndRemove",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryKeysAndRemoveTest, "PSI.StringTableUtils.Library.KeysAndRemove",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_LibraryKeysAndRemoveTest::RunTest(const FString& Parameters)
@@ -143,7 +143,7 @@ bool FPSIStringTableUtils_LibraryKeysAndRemoveTest::RunTest(const FString& Param
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryMetaDataTest, "PSIStringTableUtils.Library.MetaData",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryMetaDataTest, "PSI.StringTableUtils.Library.MetaData",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_LibraryMetaDataTest::RunTest(const FString& Parameters)
@@ -183,7 +183,7 @@ bool FPSIStringTableUtils_LibraryMetaDataTest::RunTest(const FString& Parameters
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryLiteralAndEqualityTest, "PSIStringTableUtils.Library.LiteralAndEquality",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryLiteralAndEqualityTest, "PSI.StringTableUtils.Library.LiteralAndEquality",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_LibraryLiteralAndEqualityTest::RunTest(const FString& Parameters)
@@ -208,7 +208,7 @@ bool FPSIStringTableUtils_LibraryLiteralAndEqualityTest::RunTest(const FString& 
 }
 
 // Regression test for a bug where 'GetStringTableEntryHandleFromText' always returned an empty handle.
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryEntryHandleFromTextTest, "PSIStringTableUtils.Library.EntryHandleFromText",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryEntryHandleFromTextTest, "PSI.StringTableUtils.Library.EntryHandleFromText",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_LibraryEntryHandleFromTextTest::RunTest(const FString& Parameters)
@@ -226,7 +226,7 @@ bool FPSIStringTableUtils_LibraryEntryHandleFromTextTest::RunTest(const FString&
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryCsvRoundTripTest, "PSIStringTableUtils.Library.CsvRoundTrip",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryCsvRoundTripTest, "PSI.StringTableUtils.Library.CsvRoundTrip",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FPSIStringTableUtils_LibraryCsvRoundTripTest::RunTest(const FString& Parameters)
