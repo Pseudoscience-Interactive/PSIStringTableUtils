@@ -29,8 +29,8 @@ This plugin removes this step. It reads and writes the metadata of an entry as a
 - The metadata-as-struct functions are also available in C++
 
 🧮 **Synergy with PSI Property Spreadsheet**
-- With the [**PSI Property Spreadsheet**](https://www.fab.com/listings/ce66d2c8-5fbb-43a7-85d7-bd84e3ad03de) you can inspect (and modify) your added metadata directly in the Unreal Editor
-- Metadata structs defined and edited in the Spreadsheet can be read back as the same structs
+- With the [**PSI Property Spreadsheet**](https://www.fab.com/listings/ce66d2c8-5fbb-43a7-85d7-bd84e3ad03de) you can inspect, modify, and add metadata to String Table rows directly in the Unreal Editor
+- You can set the same struct to edit the metadata in the Spreadsheet as you use to read it out using the String Table Utilities
 
 ## Requirements
 
