@@ -1,6 +1,6 @@
 # PSI String Table Utilities
 
-The **PSI String Table Utilities** is a Unreal Engine 5 plugin that provides a Blueprint API to modify String Tables and to easily write and retrieve their metadata.
+**PSI String Table Utilities** is an Unreal Engine 5 plugin that provides a Blueprint API to modify String Tables and to easily write and retrieve their metadata.
 
 <!-- TODO: Add the Fab listing link once the listing is published. -->
 🧾[**Documentation**](https://pseudoscienceinteractive.com/psi-string-table-utilities/) |🗨️[**Discord**](https://discord.gg/xFj7AXC9Ut) |🔧[**Website & Support**](https://pseudoscienceinteractive.com/psi-string-table-utilities/) |🧮**Synergy with [PSI Property Spreadsheet](https://www.fab.com/listings/ce66d2c8-5fbb-43a7-85d7-bd84e3ad03de)**
