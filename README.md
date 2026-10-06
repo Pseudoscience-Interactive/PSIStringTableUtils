@@ -1,6 +1,6 @@
 # PSI String Table Utilities
 
-The **PSI String Table Utilities** plugin provides a Blueprint API to modify String Tables and to easily write and retrieve their metadata.
+The **PSI String Table Utilities** is a Unreal Engine 5 plugin that provides a Blueprint API to modify String Tables and to easily write and retrieve their metadata.
 
 <!-- TODO: Add the Fab listing link once the listing is published. -->
 🧾[**Documentation**](https://pseudoscienceinteractive.com/psi-string-table-utilities/) |🗨️[**Discord**](https://discord.gg/xFj7AXC9Ut) |🔧[**Website & Support**](https://pseudoscienceinteractive.com/psi-string-table-utilities/) |🧮**Synergy with [PSI Property Spreadsheet](https://www.fab.com/listings/ce66d2c8-5fbb-43a7-85d7-bd84e3ad03de)**
@@ -9,7 +9,7 @@ The **PSI String Table Utilities** plugin provides a Blueprint API to modify Str
 
 ## Why does this plugin exist?
 
-[String Tables](https://dev.epicgames.com/documentation/unreal-engine/using-string-tables-in-unreal-engine) can store additional **metadata** for each of their entries. In vanilla Unreal, however, Blueprints can only read this metadata as plain strings. If you want to use it for anything other than display purposes, you have to write a conversion for every single metadata value you define.
+[String Tables](https://dev.epicgames.com/documentation/unreal-engine/using-string-tables-for-text-in-unreal-engine) can store additional **metadata** for each of their entries. In vanilla Unreal, however, Blueprints can only read this metadata as plain strings. If you want to use it for anything other than display purposes, you have to write a conversion for every single metadata value you define.
 
 This plugin removes this step. It reads and writes the metadata of an entry as a struct, where each struct property corresponds to a metadata value. In addition, String Tables and their entries can be referenced as proper values in Blueprints, rather than as raw table names and key strings.
 
@@ -22,7 +22,7 @@ This plugin removes this step. It reads and writes the metadata of an entry as a
 - Use structs to write metadata of String Table entries, and read the metadata back into a struct
 - Struct properties are matched with metadata values by name and converted to the property's type
 
-🔧 **Blueprint Nodes & C++ API**
+📘 **Blueprint Nodes & C++ API**
 - Nodes for reading String Tables, their entries, and metadata (Editor and packaged games)
 - Nodes for modifying String Tables and their metadata (Editor only)
 - Nodes for importing and exporting String Tables as CSV
