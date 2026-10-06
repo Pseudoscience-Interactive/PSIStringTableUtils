@@ -75,4 +75,70 @@ bool FPSIStringTableUtils_HelperMetaDataAsStructRoundTripTest::RunTest(const FSt
     return true;
 }
 
+// Before UE 5.8, the CSV functions use an own implementation, so this test covers both it and the engine's.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_HelperCsvRoundTripTest, "PSI.StringTableUtils.Helper.CsvRoundTrip",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FPSIStringTableUtils_HelperCsvRoundTripTest::RunTest(const FString& Parameters)
+{
+    const FString TrickySourceString = TEXT("Say \"Hi\", then\nleave\tC:\\Path");
+    const FString TrickyMetaData = TEXT("Line 1\nLine 2, \"quoted\"");
+
+    const FPSIStringTableUtilsTestTableScope SourceTableScope(TEXT("HelperCsvSource"));
+    SourceTableScope.SetSourceString(TEXT("Plain"), TEXT("Value"));
+    SourceTableScope.SetSourceString(TEXT("Key, \"with\" quotes"), TrickySourceString);
+    SourceTableScope.StringTable->SetMetaData(TEXT("Key, \"with\" quotes"), FName(TEXT("Speaker")), TrickyMetaData);
+
+    const FString CSVString = FPSIStringTableUtilsHelper::ExportStringTableToCSVString(SourceTableScope.StringTable);
+    TestTrue(TEXT("The CSV string starts with the 'Key' and 'SourceString' columns"), CSVString.StartsWith(TEXT("Key,SourceString")));
+
+    const FPSIStringTableUtilsTestTableScope DestinationTableScope(TEXT("HelperCsvDestination"));
+    DestinationTableScope.SetSourceString(TEXT("Stale"), TEXT("Removed by the import"));
+    TestTrue(TEXT("The exported CSV string can be imported"),
+        FPSIStringTableUtilsHelper::ImportStringTableFromCSVString(DestinationTableScope.StringTable, CSVString, TEXT("HelperCsvRoundTrip")));
+
+    FString SourceString;
+    TestFalse(TEXT("The import replaces the existing entries"), DestinationTableScope.StringTable->GetSourceString(TEXT("Stale"), SourceString));
+    TestTrue(TEXT("The plain entry is imported"), DestinationTableScope.StringTable->GetSourceString(TEXT("Plain"), SourceString));
+    TestEqual(TEXT("The plain entry keeps its source string"), SourceString, FString(TEXT("Value")));
+    TestTrue(TEXT("The entry with special characters in its key is imported"),
+        DestinationTableScope.StringTable->GetSourceString(TEXT("Key, \"with\" quotes"), SourceString));
+    TestEqual(TEXT("Quotes, commas, line breaks, tabs and backslashes survive in the source string"), SourceString, TrickySourceString);
+    TestEqual(TEXT("Quotes, commas and line breaks survive in the metadata"),
+        DestinationTableScope.StringTable->GetMetaData(TEXT("Key, \"with\" quotes"), FName(TEXT("Speaker"))), TrickyMetaData);
+    TestTrue(TEXT("An entry without metadata gets no metadata from the import"),
+        DestinationTableScope.StringTable->GetMetaData(TEXT("Plain"), FName(TEXT("Speaker"))).IsEmpty());
+
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_HelperCsvImportColumnsTest, "PSI.StringTableUtils.Helper.CsvImportColumns",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FPSIStringTableUtils_HelperCsvImportColumnsTest::RunTest(const FString& Parameters)
+{
+    const FPSIStringTableUtilsTestTableScope TableScope(TEXT("HelperCsvImportColumns"));
+
+    // The columns may be in any order. A dev notes column is never imported as metadata.
+    const FString CSVString = TEXT("Speaker,DevNotes,SourceString,Key\n\"Bob\",\"A note\",\"Hello\",\"Greeting\"\n");
+    TestTrue(TEXT("A CSV string with reordered columns can be imported"),
+        FPSIStringTableUtilsHelper::ImportStringTableFromCSVString(TableScope.StringTable, CSVString, TEXT("HelperCsvImportColumns")));
+
+    FString SourceString;
+    TableScope.StringTable->GetSourceString(TEXT("Greeting"), SourceString);
+    TestEqual(TEXT("The source string is read from its column"), SourceString, FString(TEXT("Hello")));
+    TestEqual(TEXT("The metadata is read from its column"),
+        TableScope.StringTable->GetMetaData(TEXT("Greeting"), FName(TEXT("Speaker"))), FString(TEXT("Bob")));
+    TestTrue(TEXT("The dev notes are not imported as metadata"),
+        TableScope.StringTable->GetMetaData(TEXT("Greeting"), FName(TEXT("DevNotes"))).IsEmpty());
+
+    AddExpectedMessage(TEXT("Failed to import"), ELogVerbosity::Warning, EAutomationExpectedMessageFlags::Contains, 2);
+    TestFalse(TEXT("A CSV string without entry rows is rejected"),
+        FPSIStringTableUtilsHelper::ImportStringTableFromCSVString(TableScope.StringTable, TEXT("Key,SourceString\n"), TEXT("HeaderOnly")));
+    TestFalse(TEXT("A CSV string without a 'SourceString' column is rejected"),
+        FPSIStringTableUtilsHelper::ImportStringTableFromCSVString(TableScope.StringTable, TEXT("Key,Speaker\n\"A\",\"B\"\n"), TEXT("NoSourceString")));
+
+    return true;
+}
+
 #endif // WITH_DEV_AUTOMATION_TESTS
