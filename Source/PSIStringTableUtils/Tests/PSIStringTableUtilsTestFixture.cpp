@@ -6,6 +6,8 @@
 #include "Misc/Guid.h"
 #include "PSIEngineVersionComparison.h"
 
+#if WITH_DEV_AUTOMATION_TESTS
+
 FPSIStringTableUtilsTestTableScope::FPSIStringTableUtilsTestTableScope(const FString& DebugName)
     : TableId(*FString::Printf(TEXT("%s_%s"), *DebugName, *FGuid::NewGuid().ToString(EGuidFormats::Digits)))
     , StringTable(FStringTable::NewStringTable())
@@ -26,3 +28,5 @@ void FPSIStringTableUtilsTestTableScope::SetSourceString(const FString& Key, con
     StringTable->SetSourceString(Key, SourceString);
 #endif
 }
+
+#endif // WITH_DEV_AUTOMATION_TESTS

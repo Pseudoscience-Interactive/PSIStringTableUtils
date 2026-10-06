@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Internationalization/StringTableCoreFwd.h"
 
+#if WITH_DEV_AUTOMATION_TESTS
+
 /**
  * Test-only RAII fixture that registers a transient 'FStringTable' under a unique table ID for the
  * lifetime of the scope, and unregisters it again on destruction.
@@ -23,3 +25,5 @@ struct FPSIStringTableUtilsTestTableScope
     FName TableId;
     FStringTableRef StringTable;
 };
+
+#endif // WITH_DEV_AUTOMATION_TESTS
