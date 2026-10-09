@@ -65,7 +65,8 @@ void SPSIStringTableEntryHandleGraphPin::OnSetTableId(const FString& NewValue)
 {
     FName TableId;
     const FStringTableConstPtr StringTable = FPSIStringTableHelper::FindStringTableByName(*NewValue, &TableId, /*bIncludeEmptyStringTables*/ true);
-    if (StringTableEntryHandle.TableId == TableId)
+    // Compares the names, because Xcode 14 of UE 5.3 and 5.4 finds comparing the ID with an 'FName' ambiguous.
+    if (StringTableEntryHandle.TableId.Name == TableId)
     {
         return;
     }
