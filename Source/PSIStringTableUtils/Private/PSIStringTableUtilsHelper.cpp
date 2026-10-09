@@ -51,6 +51,19 @@ bool FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(const FSt
     }
     
     bool bChanged = false;
+
+    // The owner asset is modified once, right before the first change.
+    const auto PrepareChange = [&bChanged, &StringTable]()
+    {
+#if WITH_EDITOR
+        if (!bChanged)
+        {
+            PreStringTableChange(StringTable);
+        }
+#endif
+        bChanged = true;
+    };
+
     for (TFieldIterator<FProperty> It(Struct); It; ++It)
     {
         const FProperty* Property = *It;
@@ -70,15 +83,15 @@ bool FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(const FSt
             FString MetaDataValue;
             if (Property->ExportText_Direct(MetaDataValue, ValuePtr, nullptr, nullptr, PPF_Delimited | PPF_ExternalEditor))
             {
+                PrepareChange();
                 StringTable->SetMetaData(TextKey, MetaDataKey, MetaDataValue);
-                bChanged = true;
             }
         }
-            
+
         else if (!StringTable->GetMetaData(TextKey, MetaDataKey).IsEmpty())
         {
+            PrepareChange();
             StringTable->RemoveMetaData(TextKey, MetaDataKey);
-            bChanged = true;
         }
     }
     
@@ -190,7 +203,14 @@ bool FPSIStringTableUtilsHelper::ImportStringTableFromCSVString(const FStringTab
     }
 
 #if PSI_VERSION_NEWER_THAN_OR_EQUAL(5, 8, 0)
-    return StringTable->ImportStringsFromCSVString(CSVString, ErrorContext);
+#if WITH_EDITOR
+    PreStringTableChange(StringTable);
+#endif
+    const bool bImported = StringTable->ImportStringsFromCSVString(CSVString, ErrorContext);
+#if WITH_EDITOR
+    NotifyStringTableChanged(StringTable);
+#endif
+    return bImported;
 #else
     // Older engine versions cannot import a string table from a CSV string, so the CSV is read here.
     // It accepts the same format as the CSV files of the engine. Entries have no dev notes before UE 5.8, so a dev
@@ -240,6 +260,9 @@ bool FPSIStringTableUtilsHelper::ImportStringTableFromCSVString(const FStringTab
         return Row.IsValidIndex(Column) ? FString(Row[Column]).ReplaceEscapedCharWithChar() : FString();
     };
 
+#if WITH_EDITOR
+    PreStringTableChange(StringTable);
+#endif
     StringTable->ClearSourceStrings();
 
     for (int32 RowIndex = 1; RowIndex < Rows.Num(); ++RowIndex)
@@ -265,6 +288,9 @@ bool FPSIStringTableUtilsHelper::ImportStringTableFromCSVString(const FStringTab
         }
     }
 
+#if WITH_EDITOR
+    NotifyStringTableChanged(StringTable);
+#endif
     return true;
 #endif
 }
@@ -276,14 +302,32 @@ bool FPSIStringTableUtilsHelper::ImportStringTableFromCSVFile(const FStringTable
         return false;
     }
 
-#if PSI_VERSION_NEWER_THAN_OR_EQUAL(5, 8, 0)
-    return StringTable->ImportStringsFromCSVFile(FilePath);
-#else
-    return StringTable->ImportStrings(FilePath);
+#if WITH_EDITOR
+    PreStringTableChange(StringTable);
 #endif
+
+#if PSI_VERSION_NEWER_THAN_OR_EQUAL(5, 8, 0)
+    const bool bImported = StringTable->ImportStringsFromCSVFile(FilePath);
+#else
+    const bool bImported = StringTable->ImportStrings(FilePath);
+#endif
+
+#if WITH_EDITOR
+    NotifyStringTableChanged(StringTable);
+#endif
+    return bImported;
 }
 
 #if WITH_EDITOR
+void FPSIStringTableUtilsHelper::PreStringTableChange(const FStringTableConstPtr& StringTable)
+{
+    UStringTable* OwnerAsset = StringTable.IsValid() ? StringTable->GetOwnerAsset() : nullptr;
+    if (OwnerAsset != nullptr)
+    {
+        OwnerAsset->Modify();
+    }
+}
+
 void FPSIStringTableUtilsHelper::NotifyStringTableChanged(const FStringTableConstPtr& StringTable)
 {
     if (!StringTable.IsValid())
@@ -296,8 +340,6 @@ void FPSIStringTableUtilsHelper::NotifyStringTableChanged(const FStringTableCons
     {
         return;
     }
-
-    OwnerAsset->Modify();
 
     // The native String Table editor does not react to changes made through this helper on its own, so any editor
     // that currently has the asset open needs to be told to refresh explicitly. That logic lives in

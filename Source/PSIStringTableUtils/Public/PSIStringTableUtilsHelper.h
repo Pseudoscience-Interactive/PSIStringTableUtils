@@ -121,9 +121,17 @@ namespace FPSIStringTableUtilsHelper
     bool PSISTRINGTABLEUTILS_API ImportStringTableFromCSVFile(const FStringTablePtr& StringTable, const FString& FilePath);
 
 #if WITH_EDITOR
-    /** 
-     * Notifies that the 'OwnerAsset' of the specified string table has been changed. Does nothing if the string table 
-     * does not have an owner asset. Should be called everytime the string table is modified.
+    /**
+     * Calls 'Modify' on the 'OwnerAsset' of the specified string table, so an open transaction records its state
+     * before the change. Must be called before every change of the string table. Does nothing if the string table
+     * does not have an owner asset.
+     */
+    void PSISTRINGTABLEUTILS_API PreStringTableChange(const FStringTableConstPtr& StringTable);
+
+    /**
+     * Notifies that the 'OwnerAsset' of the specified string table has been changed. Does nothing if the string table
+     * does not have an owner asset. Should be called everytime the string table is modified, after
+     * 'PreStringTableChange' was called before the change.
      */
     void PSISTRINGTABLEUTILS_API NotifyStringTableChanged(const FStringTableConstPtr& StringTable);
 #endif

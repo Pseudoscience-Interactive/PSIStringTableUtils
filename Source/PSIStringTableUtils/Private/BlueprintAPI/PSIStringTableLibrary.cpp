@@ -202,6 +202,8 @@ bool UPSIStringTableLibrary::SetStringTableSourceString(FPSIStringTableEntryHand
                 return true;
             });
 
+            FPSIStringTableUtilsHelper::PreStringTableChange(StringTable);
+
 #if PSI_VERSION_NEWER_THAN_OR_EQUAL(5, 8, 0) && WITH_EDITORONLY_DATA
             const FString DevNotes = StringTableEntry->GetDevNotes();
             StringTable->SetSourceString(TextKey, InSourceString, DevNotes);
@@ -218,6 +220,8 @@ bool UPSIStringTableLibrary::SetStringTableSourceString(FPSIStringTableEntryHand
             return true;
         }
     }
+
+    FPSIStringTableUtilsHelper::PreStringTableChange(StringTable);
 
 #if PSI_VERSION_NEWER_THAN_OR_EQUAL(5, 8, 0) && WITH_EDITORONLY_DATA
     StringTable->SetSourceString(TextKey, InSourceString, FString());
@@ -246,6 +250,7 @@ bool UPSIStringTableLibrary::RemoveStringTableEntry(FPSIStringTableEntryHandle E
     const FTextKey TextKey = Entry.GetTextKey();
     if (StringTable->FindEntry(TextKey).IsValid())
     {
+        FPSIStringTableUtilsHelper::PreStringTableChange(StringTable);
         StringTable->RemoveSourceString(TextKey);
         FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
         return true;
@@ -313,6 +318,7 @@ bool UPSIStringTableLibrary::SetStringTableEntryMetaData(FPSIStringTableEntryHan
         return false;
     }
     
+    FPSIStringTableUtilsHelper::PreStringTableChange(StringTable);
     StringTable->SetMetaData(TextKey, MetaDataId, MetaDataValue);
     FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
     
@@ -336,6 +342,7 @@ bool UPSIStringTableLibrary::RemoveStringTableEntryMetaData(FPSIStringTableEntry
     const FTextKey TextKey = Entry.GetTextKey();
     if (!StringTable->GetMetaData(TextKey, MetaDataId).IsEmpty()) 
     {
+        FPSIStringTableUtilsHelper::PreStringTableChange(StringTable);
         StringTable->RemoveMetaData(TextKey, MetaDataId);
         FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
         
@@ -361,6 +368,7 @@ bool UPSIStringTableLibrary::ClearMetaDataFromStringTableEntry(FPSIStringTableEn
     const FTextKey TextKey = Entry.GetTextKey();
     if (FPSIStringTableUtilsHelper::DoesStringTableEntryHasMetaData(StringTable, TextKey))
     {
+        FPSIStringTableUtilsHelper::PreStringTableChange(StringTable);
         StringTable->ClearMetaData(TextKey);
         FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
         return true;
@@ -377,6 +385,7 @@ void UPSIStringTableLibrary::ClearStringTableMetaData(FPSIStringTableId TableId)
         return;
     }
     
+    FPSIStringTableUtilsHelper::PreStringTableChange(StringTable);
     StringTable->ClearMetaData();
     
     // We just assume that some metadata existed and has been removed.
@@ -391,7 +400,9 @@ void UPSIStringTableLibrary::SetStringTableNamespace(FPSIStringTableId TableId, 
         return;
     }
     
+    FPSIStringTableUtilsHelper::PreStringTableChange(StringTable);
     StringTable->SetNamespace(Namespace);
+    FPSIStringTableUtilsHelper::NotifyStringTableChanged(StringTable);
 }
 
 #endif
