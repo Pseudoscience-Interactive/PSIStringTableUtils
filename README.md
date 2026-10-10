@@ -5,7 +5,7 @@
 <!-- TODO: Add the Fab listing link once the listing is published. -->
 🧾[**Documentation**](https://pseudoscienceinteractive.com/psi-string-table-utilities/) |🗨️[**Discord**](https://discord.gg/xFj7AXC9Ut) |🔧[**Website & Support**](https://pseudoscienceinteractive.com/psi-string-table-utilities/) |🧮**Synergy with [PSI Property Spreadsheet](https://www.fab.com/listings/ce66d2c8-5fbb-43a7-85d7-bd84e3ad03de)**
 
-**This plugin is totally free without a catch**. But if you find it useful and want to support us, please check out our [other plugins on Fab](https://www.fab.com/sellers/Pseudoscience%20Interactive).
+**This plugin is completely free**. But if you find it useful and want to support us, please check out our [other plugins on Fab](https://www.fab.com/sellers/Pseudoscience%20Interactive).
 
 ## Why does this plugin exist?
 
@@ -61,7 +61,7 @@ FMyDialogueMetaData MetaData;
 FPSIStringTableUtilsHelper::GetStringTableEntryMetaDataAsStruct(StringTable, TextKey, MetaData);
 ```
 
-See the [documentation](https://pseudoscienceinteractive.com/psi-string-table-utilities/) for all nodes and types.
+See the [documentation](https://pseudoscienceinteractive.com/doc/string-table-utilities_get-started) for all nodes and types.
 
 ## Tests
 
@@ -73,4 +73,4 @@ If you have questions, found a bug, or just want to get in touch, join our [Disc
 
 ## License
 
-This plugin is free and licensed under the [MIT License](LICENSE). The copy on Fab is the same plugin and is also distributed under the Fab Standard License, so you can use it under either license.
+This plugin is free and licensed under the [MIT License](LICENSE). The copy on Fab is the same plugin and is distributed under the Fab Standard License. It can be used under either license.
