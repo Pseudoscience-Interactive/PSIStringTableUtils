@@ -3,6 +3,7 @@
 #include "PSIStringTableUtilsHelper.h"
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
+#include "Misc/Paths.h"
 #include "PSIEngineVersionComparison.h"
 #include "PSIStringTableUtilsLog.h"
 #include "PSIStringTableUtilsModule.h"
@@ -299,6 +300,13 @@ bool FPSIStringTableUtilsHelper::ImportStringTableFromCSVFile(const FStringTable
 {
     if (!StringTable.IsValid())
     {
+        return false;
+    }
+
+    // A missing file would otherwise mark the String Table dirty without changing it.
+    if (!FPaths::FileExists(FilePath))
+    {
+        UE_LOG(LogPSIStringTableUtils, Warning, TEXT("[FPSIStringTableUtilsHelper::ImportStringTableFromCSVFile] Failed to import '%s'. The file does not exist."), *FilePath);
         return false;
     }
 
