@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"Version": 3,
+	"Version": 4,
 	"VersionName": "1.0.1",
 	"FriendlyName": "PSI String Table Utilities",
 	"Description": "The PSI String Table Utilities plugin provides a Blueprint API to modify String Tables and to easily write and retrieve their metadata.",
