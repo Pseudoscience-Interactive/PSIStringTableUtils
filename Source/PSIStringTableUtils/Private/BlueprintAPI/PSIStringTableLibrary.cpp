@@ -80,19 +80,19 @@ TArray<FString> UPSIStringTableLibrary::GetKeysFromStringTable(FPSIStringTableId
 
 TArray<FName> UPSIStringTableLibrary::GetMetaDataIdsFromStringTableEntry(FPSIStringTableEntryHandle Entry)
 {
-    TArray<FName> MetaDataIdsFromStringTable;
+    TArray<FName> MetadataIdsFromStringTable;
 
     const FStringTableConstPtr StringTable = Entry.GetStringTable();
     if (StringTable.IsValid())
     {
-        StringTable->EnumerateMetaData(Entry.GetTextKey(), [&](FName InMetaDataId, const FString&) -> bool
+        StringTable->EnumerateMetaData(Entry.GetTextKey(), [&](FName InMetadataId, const FString&) -> bool
         {
-            MetaDataIdsFromStringTable.Add(InMetaDataId);
+            MetadataIdsFromStringTable.Add(InMetadataId);
             return true; // continue enumeration
         });
     }
 
-    return MetaDataIdsFromStringTable;
+    return MetadataIdsFromStringTable;
 }
 
 bool UPSIStringTableLibrary::ExportStringTableToCSVString(FPSIStringTableId TableId, FString& OutCSVString)
@@ -165,7 +165,7 @@ DEFINE_FUNCTION(UPSIStringTableLibrary::execPopulateStructWithStringTableEntryMe
     else
     {
         P_NATIVE_BEGIN;
-        RetrievedValues = FPSIStringTableUtilsHelper::GetStringTableEntryMetaDataAsStruct(
+        RetrievedValues = FPSIStringTableUtilsHelper::GetStringTableEntryMetadataAsStruct(
                  Entry.GetStringTable(), Entry.GetTextKey(), ValueProp->Struct, ValuePtr);
         P_NATIVE_END;
     }
@@ -193,10 +193,10 @@ bool UPSIStringTableLibrary::SetStringTableSourceString(FPSIStringTableEntryHand
         const FStringTableEntryConstPtr StringTableEntry = StringTable->FindEntry(TextKey);
         if (StringTableEntry.IsValid())
         {
-            TArray<TTuple<FName, FString>> MetaData;
-            StringTable->EnumerateMetaData(TextKey, [&MetaData](FName MetaDataId, const FString& MetaDataValue)
+            TArray<TTuple<FName, FString>> Metadata;
+            StringTable->EnumerateMetaData(TextKey, [&Metadata](FName MetadataId, const FString& MetadataValue)
             {
-                MetaData.Emplace(MetaDataId, MetaDataValue);
+                Metadata.Emplace(MetadataId, MetadataValue);
                 
                 // continue
                 return true;
@@ -211,7 +211,7 @@ bool UPSIStringTableLibrary::SetStringTableSourceString(FPSIStringTableEntryHand
             StringTable->SetSourceString(TextKey, InSourceString);
 #endif
             
-            for (const TTuple<FName, FString>& Tuple : MetaData)
+            for (const TTuple<FName, FString>& Tuple : Metadata)
             {
                 StringTable->SetMetaData(TextKey, Tuple.Key, Tuple.Value);
             }
@@ -291,7 +291,7 @@ DEFINE_FUNCTION(UPSIStringTableLibrary::execSetStringTableEntryMetaDataFromStruc
     else
     {
         P_NATIVE_BEGIN;
-        *static_cast<bool*>(RESULT_PARAM) = FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(
+        *static_cast<bool*>(RESULT_PARAM) = FPSIStringTableUtilsHelper::SetStringTableEntryMetadataFromStruct(
             Entry.GetStringTable(), Entry.GetTextKey(), ValueProp->Struct, ValuePtr);
         P_NATIVE_END;
     }
@@ -366,7 +366,7 @@ bool UPSIStringTableLibrary::ClearMetaDataFromStringTableEntry(FPSIStringTableEn
     }
 
     const FTextKey TextKey = Entry.GetTextKey();
-    if (FPSIStringTableUtilsHelper::DoesStringTableEntryHasMetaData(StringTable, TextKey))
+    if (FPSIStringTableUtilsHelper::DoesStringTableEntryHasMetadata(StringTable, TextKey))
     {
         FPSIStringTableUtilsHelper::PreStringTableChange(StringTable);
         StringTable->ClearMetaData(TextKey);

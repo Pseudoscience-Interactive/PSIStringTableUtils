@@ -103,7 +103,7 @@ bool FPSIStringTableUtils_LibrarySourceStringPreserveDataTest::RunTest(const FSt
     TestTrue(TEXT("'SetStringTableSourceString' with 'bPreserveData' succeeds for an existing entry"), bUpdateResult);
     TestEqual(TEXT("The existing entry has the new source string"),
         UPSIStringTableLibrary::GetStringTableSourceString(Entry), FString(TEXT("World")));
-    TestEqual(TEXT("The existing entry keeps its meta-data"),
+    TestEqual(TEXT("The existing entry keeps its metadata"),
         UPSIStringTableLibrary::GetStringTableEntryMetaData(Entry, FName(TEXT("MetaId"))), FString(TEXT("MetaValue")));
 #else
     AddInfo(TEXT("Skipped: 'SetStringTableSourceString' is only available 'WITH_EDITOR'."));
@@ -143,41 +143,41 @@ bool FPSIStringTableUtils_LibraryKeysAndRemoveTest::RunTest(const FString& Param
     return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryMetaDataTest, "PSI.StringTableUtils.Library.MetaData",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPSIStringTableUtils_LibraryMetadataTest, "PSI.StringTableUtils.Library.Metadata",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
-bool FPSIStringTableUtils_LibraryMetaDataTest::RunTest(const FString& Parameters)
+bool FPSIStringTableUtils_LibraryMetadataTest::RunTest(const FString& Parameters)
 {
 #if WITH_EDITOR
-    const FPSIStringTableUtilsTestTableScope TableScope(TEXT("LibraryMetaData"));
+    const FPSIStringTableUtilsTestTableScope TableScope(TEXT("LibraryMetadata"));
     TableScope.SetSourceString(TEXT("Key"), TEXT("Value"));
 
     const FPSIStringTableEntryHandle Entry(TableScope.TableId, FString(TEXT("Key")));
 
-    TestTrue(TEXT("'GetMetaDataIdsFromStringTableEntry' is empty before any meta-data is set"),
+    TestTrue(TEXT("'GetMetaDataIdsFromStringTableEntry' is empty before any metadata is set"),
         UPSIStringTableLibrary::GetMetaDataIdsFromStringTableEntry(Entry).IsEmpty());
 
-    const bool bSetMetaData = UPSIStringTableLibrary::SetStringTableEntryMetaData(Entry, FName(TEXT("MetaId")), TEXT("MetaValue"));
-    TestTrue(TEXT("'SetStringTableEntryMetaData' succeeds for an existing entry"), bSetMetaData);
+    const bool bSetMetadata = UPSIStringTableLibrary::SetStringTableEntryMetaData(Entry, FName(TEXT("MetaId")), TEXT("MetaValue"));
+    TestTrue(TEXT("'SetStringTableEntryMetaData' succeeds for an existing entry"), bSetMetadata);
     TestEqual(TEXT("'GetStringTableEntryMetaData' returns the value that was set"),
         UPSIStringTableLibrary::GetStringTableEntryMetaData(Entry, FName(TEXT("MetaId"))), FString(TEXT("MetaValue")));
 
-    const TArray<FName> MetaDataIds = UPSIStringTableLibrary::GetMetaDataIdsFromStringTableEntry(Entry);
-    TestEqual(TEXT("'GetMetaDataIdsFromStringTableEntry' returns the one meta-data ID that was set"), MetaDataIds.Num(), 1);
-    TestTrue(TEXT("'GetMetaDataIdsFromStringTableEntry' includes 'MetaId'"), MetaDataIds.Contains(FName(TEXT("MetaId"))));
+    const TArray<FName> MetadataIds = UPSIStringTableLibrary::GetMetaDataIdsFromStringTableEntry(Entry);
+    TestEqual(TEXT("'GetMetaDataIdsFromStringTableEntry' returns the one metadata ID that was set"), MetadataIds.Num(), 1);
+    TestTrue(TEXT("'GetMetaDataIdsFromStringTableEntry' includes 'MetaId'"), MetadataIds.Contains(FName(TEXT("MetaId"))));
 
-    const bool bRemovedMetaData = UPSIStringTableLibrary::RemoveStringTableEntryMetaData(Entry, FName(TEXT("MetaId")));
-    TestTrue(TEXT("'RemoveStringTableEntryMetaData' succeeds for an existing meta-data ID"), bRemovedMetaData);
-    TestTrue(TEXT("The meta-data ID is gone after being removed"),
+    const bool bRemovedMetadata = UPSIStringTableLibrary::RemoveStringTableEntryMetaData(Entry, FName(TEXT("MetaId")));
+    TestTrue(TEXT("'RemoveStringTableEntryMetaData' succeeds for an existing metadata ID"), bRemovedMetadata);
+    TestTrue(TEXT("The metadata ID is gone after being removed"),
         UPSIStringTableLibrary::GetStringTableEntryMetaData(Entry, FName(TEXT("MetaId"))).IsEmpty());
 
     UPSIStringTableLibrary::SetStringTableEntryMetaData(Entry, FName(TEXT("AnotherMetaId")), TEXT("AnotherValue"));
     const bool bCleared = UPSIStringTableLibrary::ClearMetaDataFromStringTableEntry(Entry);
-    TestTrue(TEXT("'ClearMetaDataFromStringTableEntry' succeeds when meta-data exists"), bCleared);
-    TestTrue(TEXT("No meta-data IDs remain after clearing"),
+    TestTrue(TEXT("'ClearMetaDataFromStringTableEntry' succeeds when metadata exists"), bCleared);
+    TestTrue(TEXT("No metadata IDs remain after clearing"),
         UPSIStringTableLibrary::GetMetaDataIdsFromStringTableEntry(Entry).IsEmpty());
 #else
-    AddInfo(TEXT("Skipped: meta-data mutation functions are only available 'WITH_EDITOR'."));
+    AddInfo(TEXT("Skipped: metadata mutation functions are only available 'WITH_EDITOR'."));
 #endif
 
     return true;

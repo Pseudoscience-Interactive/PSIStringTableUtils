@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "PSIStringTableUtilsTestObjects.generated.h"
 
-/** Test-only struct whose property names are used as metadata IDs by the meta-data-as-struct tests. */
+/** Test-only struct whose property names are used as metadata IDs by the metadata-as-struct tests. */
 USTRUCT()
 struct FPSIStringTableUtilsTestMetaDataStruct
 {

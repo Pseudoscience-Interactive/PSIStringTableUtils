@@ -25,7 +25,7 @@ namespace FPSIStringTableUtilsHelper
      * @param StructValuePtr A pointer of a value of the struct to store the metadata values.
      * @return The total number of metadata values retrieved.
      */
-    int32 PSISTRINGTABLEUTILS_API GetStringTableEntryMetaDataAsStruct(const FStringTableConstPtr& StringTable, const FTextKey& TextKey, const UScriptStruct* Struct, void* StructValuePtr);
+    int32 PSISTRINGTABLEUTILS_API GetStringTableEntryMetadataAsStruct(const FStringTableConstPtr& StringTable, const FTextKey& TextKey, const UScriptStruct* Struct, void* StructValuePtr);
     
     /**
      * Gets the metadata of the specified string table entry as property values of a given struct. Each property of 
@@ -42,9 +42,9 @@ namespace FPSIStringTableUtilsHelper
      * @return The total number of metadata values retrieved.
      */
     template<typename T PSI_REQUIRES(TPSIIsScriptStruct<T>::Value)>
-    int32 GetStringTableEntryMetaDataAsStruct(const FStringTableConstPtr& StringTable, const FTextKey& TextKey, T& StructValue)
+    int32 GetStringTableEntryMetadataAsStruct(const FStringTableConstPtr& StringTable, const FTextKey& TextKey, T& StructValue)
     {
-        return GetStringTableEntryMetaDataAsStruct(StringTable, TextKey, T::StaticStruct(), &StructValue);
+        return GetStringTableEntryMetadataAsStruct(StringTable, TextKey, T::StaticStruct(), &StructValue);
     }
     
     /**
@@ -59,7 +59,7 @@ namespace FPSIStringTableUtilsHelper
      * table entry
      * @return True, if the metadata was successfully set; False, if the string table or the entry do not exist.
      */
-    bool PSISTRINGTABLEUTILS_API SetStringTableEntryMetaDataFromStruct(const FStringTablePtr& StringTable, const FTextKey& TextKey, const UScriptStruct* Struct, const void* StructValuePtr);
+    bool PSISTRINGTABLEUTILS_API SetStringTableEntryMetadataFromStruct(const FStringTablePtr& StringTable, const FTextKey& TextKey, const UScriptStruct* Struct, const void* StructValuePtr);
     
     /**
      * Sets the metadata of the specified string table entry from the property values of a given struct. Each property 
@@ -74,13 +74,13 @@ namespace FPSIStringTableUtilsHelper
      * @return True, if the metadata was successfully set; False, if the string table or the entry do not exist.
      */
     template<typename T PSI_REQUIRES(TPSIIsScriptStruct<T>::Value)>
-    bool SetStringTableEntryMetaDataFromStruct(const FStringTablePtr& StringTable, const FTextKey& TextKey, const T& StructValue)
+    bool SetStringTableEntryMetadataFromStruct(const FStringTablePtr& StringTable, const FTextKey& TextKey, const T& StructValue)
     {
-        return SetStringTableEntryMetaDataFromStruct(StringTable, TextKey, T::StaticStruct(), &StructValue);
+        return SetStringTableEntryMetadataFromStruct(StringTable, TextKey, T::StaticStruct(), &StructValue);
     }
     
     /** Checks whether any metadata is associated with the specified string table entry. */
-    bool PSISTRINGTABLEUTILS_API DoesStringTableEntryHasMetaData(const FStringTableConstPtr& StringTable, const FTextKey& Key);
+    bool PSISTRINGTABLEUTILS_API DoesStringTableEntryHasMetadata(const FStringTableConstPtr& StringTable, const FTextKey& Key);
 
     /**
      * Exports the keys, source strings, and metadata of the specified string table to a CSV string. Works on every

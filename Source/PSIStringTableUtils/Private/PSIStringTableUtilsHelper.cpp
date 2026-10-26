@@ -11,7 +11,7 @@
 #include "UObject/Class.h"
 #include "UObject/FieldIterator.h"
 
-int32 FPSIStringTableUtilsHelper::GetStringTableEntryMetaDataAsStruct(const FStringTableConstPtr& StringTable,
+int32 FPSIStringTableUtilsHelper::GetStringTableEntryMetadataAsStruct(const FStringTableConstPtr& StringTable,
     const FTextKey& TextKey, const UScriptStruct* Struct, void* StructValuePtr)
 {
     int32 ChangedProperties = 0;
@@ -23,13 +23,13 @@ int32 FPSIStringTableUtilsHelper::GetStringTableEntryMetaDataAsStruct(const FStr
     for (TFieldIterator<FProperty> It(Struct); It; ++It)
     {
         const FProperty* Property = *It;
-        const FName MetaDataKey = FName(Property->GetAuthoredName());
-        const FString MetaDataValue = StringTable->GetMetaData(TextKey, MetaDataKey);
+        const FName MetadataKey = FName(Property->GetAuthoredName());
+        const FString MetadataValue = StringTable->GetMetaData(TextKey, MetadataKey);
         void* ValuePtr = Property->ContainerPtrToValuePtr<void>(StructValuePtr);
         
-        if (!MetaDataValue.IsEmpty())
+        if (!MetadataValue.IsEmpty())
         {
-            Property->ImportText_Direct(*MetaDataValue, ValuePtr, nullptr, PPF_Delimited);
+            Property->ImportText_Direct(*MetadataValue, ValuePtr, nullptr, PPF_Delimited);
             ChangedProperties++;
         }
 
@@ -43,7 +43,7 @@ int32 FPSIStringTableUtilsHelper::GetStringTableEntryMetaDataAsStruct(const FStr
     return ChangedProperties;
 }
 
-bool FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(const FStringTablePtr& StringTable, const FTextKey& TextKey,
+bool FPSIStringTableUtilsHelper::SetStringTableEntryMetadataFromStruct(const FStringTablePtr& StringTable, const FTextKey& TextKey,
     const UScriptStruct* Struct, const void* StructValuePtr)
 {
     if (Struct == nullptr || StructValuePtr == nullptr || TextKey.IsEmpty() || !StringTable.IsValid())
@@ -70,7 +70,7 @@ bool FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(const FSt
         const FProperty* Property = *It;
         const void* ValuePtr = Property->ContainerPtrToValuePtr<void>(StructValuePtr);
             
-        const FName MetaDataKey = FName(Property->GetAuthoredName());
+        const FName MetadataKey = FName(Property->GetAuthoredName());
             
         // We compare the property value with its default value and decide whether we add the value to the 
         // metadata or remove it.
@@ -81,18 +81,18 @@ bool FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(const FSt
         
         if (bDiffersFromDefault)
         {
-            FString MetaDataValue;
-            if (Property->ExportText_Direct(MetaDataValue, ValuePtr, nullptr, nullptr, PPF_Delimited | PPF_ExternalEditor))
+            FString MetadataValue;
+            if (Property->ExportText_Direct(MetadataValue, ValuePtr, nullptr, nullptr, PPF_Delimited | PPF_ExternalEditor))
             {
                 PrepareChange();
-                StringTable->SetMetaData(TextKey, MetaDataKey, MetaDataValue);
+                StringTable->SetMetaData(TextKey, MetadataKey, MetadataValue);
             }
         }
 
-        else if (!StringTable->GetMetaData(TextKey, MetaDataKey).IsEmpty())
+        else if (!StringTable->GetMetaData(TextKey, MetadataKey).IsEmpty())
         {
             PrepareChange();
-            StringTable->RemoveMetaData(TextKey, MetaDataKey);
+            StringTable->RemoveMetaData(TextKey, MetadataKey);
         }
     }
     
@@ -106,16 +106,16 @@ bool FPSIStringTableUtilsHelper::SetStringTableEntryMetaDataFromStruct(const FSt
     return bChanged;
 }
 
-bool FPSIStringTableUtilsHelper::DoesStringTableEntryHasMetaData(const FStringTableConstPtr& StringTable, const FTextKey& Key)
+bool FPSIStringTableUtilsHelper::DoesStringTableEntryHasMetadata(const FStringTableConstPtr& StringTable, const FTextKey& Key)
 {
-    bool bHasMetaData = false;
+    bool bHasMetadata = false;
     StringTable->EnumerateMetaData(Key, [&](const FName&, const FString&)
     {
-        bHasMetaData = true;
+        bHasMetadata = true;
         return false;
     });
 
-    return bHasMetaData;
+    return bHasMetadata;
 }
 
 FString FPSIStringTableUtilsHelper::ExportStringTableToCSVString(const FStringTableConstPtr& StringTable)
@@ -147,12 +147,12 @@ FString FPSIStringTableUtilsHelper::ExportStringTableToCSVString(const FStringTa
     });
 
     // Each metadata ID used by any entry gets its own column.
-    TArray<FName> MetaDataIds;
+    TArray<FName> MetadataIds;
     for (const TPair<FString, FString>& Entry : Entries)
     {
-        StringTable->EnumerateMetaData(Entry.Key, [&MetaDataIds](FName MetaDataId, const FString&)
+        StringTable->EnumerateMetaData(Entry.Key, [&MetadataIds](FName MetadataId, const FString&)
         {
-            MetaDataIds.AddUnique(MetaDataId);
+            MetadataIds.AddUnique(MetadataId);
             return true;
         });
     }
@@ -161,18 +161,18 @@ FString FPSIStringTableUtilsHelper::ExportStringTableToCSVString(const FStringTa
     Lines.Reserve(Entries.Num() + 1);
 
     TArray<FString> HeaderFields = { FString(TEXT("Key")), FString(TEXT("SourceString")) };
-    for (const FName MetaDataId : MetaDataIds)
+    for (const FName MetadataId : MetadataIds)
     {
-        HeaderFields.Add(MetaDataId.ToString());
+        HeaderFields.Add(MetadataId.ToString());
     }
     Lines.Add(FString::Join(HeaderFields, TEXT(",")));
 
     for (const TPair<FString, FString>& Entry : Entries)
     {
         TArray<FString> Fields = { MakeField(Entry.Key), MakeField(Entry.Value) };
-        for (const FName MetaDataId : MetaDataIds)
+        for (const FName MetadataId : MetadataIds)
         {
-            Fields.Add(MakeField(StringTable->GetMetaData(Entry.Key, MetaDataId)));
+            Fields.Add(MakeField(StringTable->GetMetaData(Entry.Key, MetadataId)));
         }
         Lines.Add(FString::Join(Fields, TEXT(",")));
     }
@@ -245,13 +245,13 @@ bool FPSIStringTableUtilsHelper::ImportStringTableFromCSVString(const FStringTab
     }
 
     // All other named columns hold metadata.
-    TArray<TPair<int32, FName>> MetaDataColumns;
+    TArray<TPair<int32, FName>> MetadataColumns;
     for (int32 Column = 0; Column < Header.Num(); ++Column)
     {
-        const FName MetaDataId(Header[Column]);
-        if (Column != KeyColumn && Column != SourceStringColumn && Column != DevNotesColumn && !MetaDataId.IsNone())
+        const FName MetadataId(Header[Column]);
+        if (Column != KeyColumn && Column != SourceStringColumn && Column != DevNotesColumn && !MetadataId.IsNone())
         {
-            MetaDataColumns.Emplace(Column, MetaDataId);
+            MetadataColumns.Emplace(Column, MetadataId);
         }
     }
 
@@ -279,12 +279,12 @@ bool FPSIStringTableUtilsHelper::ImportStringTableFromCSVString(const FStringTab
 
         StringTable->SetSourceString(Key, GetCell(Row, SourceStringColumn));
 
-        for (const TPair<int32, FName>& MetaDataColumn : MetaDataColumns)
+        for (const TPair<int32, FName>& MetadataColumn : MetadataColumns)
         {
-            const FString MetaDataValue = GetCell(Row, MetaDataColumn.Key);
-            if (!MetaDataValue.IsEmpty())
+            const FString MetadataValue = GetCell(Row, MetadataColumn.Key);
+            if (!MetadataValue.IsEmpty())
             {
-                StringTable->SetMetaData(Key, MetaDataColumn.Value, MetaDataValue);
+                StringTable->SetMetaData(Key, MetadataColumn.Value, MetadataValue);
             }
         }
     }

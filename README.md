@@ -52,13 +52,13 @@ If the plugin is not enabled by default, go to *Edit > Plugins*, search for *PSI
 
 ## Usage
 
-In Blueprints, the nodes are listed under the *PSI > String Table* category. The most important ones are *Get String Table Entry Meta-Data as Struct* and *Set String Table Entry Meta-Data from Struct*.
+In Blueprints, the nodes are listed under the *PSI > String Table* category. The most important ones are *Get String Table Entry Metadata as Struct* and *Set String Table Entry Metadata from Struct*.
 
 In C++, add `PSIStringTableUtils` to the dependencies of your module and include `PSIStringTableUtilsHelper.h`:
 
 ```cpp
-FMyDialogueMetaData MetaData;
-FPSIStringTableUtilsHelper::GetStringTableEntryMetaDataAsStruct(StringTable, TextKey, MetaData);
+FMyDialogueMetadata Metadata;
+FPSIStringTableUtilsHelper::GetStringTableEntryMetadataAsStruct(StringTable, TextKey, Metadata);
 ```
 
 See the [documentation](https://pseudoscienceinteractive.com/doc/string-table-utilities_get-started) for all nodes and types.
