@@ -111,6 +111,16 @@ public:
         return FText::FromString(OnGetStringTableValue(PropertyHandle));
     }
 
+    /**
+     * Sets the String Table that a selector shows as 'String' on the property. A selector made with
+     * 'bDeferValueChanges' leaves the property alone, so its owner calls this when the selection is confirmed.
+     */
+    FORCEINLINE static void SetStringTableFromDisplayString(const FString& String,
+        TSharedRef<IPropertyHandle> PropertyHandle, bool bIncludeEmptyStringTables)
+    {
+        OnStringTableSelected(String, PropertyHandle, bIncludeEmptyStringTables);
+    }
+
     /** 
      * Creates a combo box widget for selecting a String Table. 
      * @param OnGetDisplayString Callback to get the display string for the currently selected String Table.
@@ -144,19 +154,24 @@ public:
      * @param ShowSearchForItemCount If the number of items in the combo box is greater than this value, it will show a
      * search box to allow filtering. -1 means to never show it.
      * @param bIncludeEmptyStringTables Whether String Tables that do not have any entries yet should be selectable.
+     * @param bDeferValueChanges Whether selecting a String Table leaves the property alone. The owner sets it with
+     * 'SetStringTableFromDisplayString' then, e.g. when an edit is confirmed.
      */
     [[nodiscard]] FORCEINLINE static TSharedRef<SWidget> MakeStringTableSelector(
         const TSharedRef<IPropertyHandle>& PropertyHandle,
         bool bAllowClear = true,
         int32 ShowSearchForItemCount = 20,
-        bool bIncludeEmptyStringTables = false)
+        bool bIncludeEmptyStringTables = false,
+        bool bDeferValueChanges = false)
     {
         FPropertyComboBoxArgs ComboArgs;
         ComboArgs.PropertyHandle = PropertyHandle;
         ComboArgs.ShowSearchForItemCount = ShowSearchForItemCount;
         ComboArgs.OnGetStrings = FOnGetPropertyComboBoxStrings::CreateStatic(&OnGetStringTableStrings, bAllowClear, bIncludeEmptyStringTables);
         ComboArgs.OnGetValue = FOnGetPropertyComboBoxValue::CreateStatic(&OnGetStringTableValue, PropertyHandle);
-        ComboArgs.OnValueSelected = FOnPropertyComboBoxValueSelected::CreateStatic(&OnStringTableSelected, PropertyHandle, bIncludeEmptyStringTables);
+        ComboArgs.OnValueSelected = bDeferValueChanges
+            ? FOnPropertyComboBoxValueSelected::CreateLambda([](const FString&) {})
+            : FOnPropertyComboBoxValueSelected::CreateStatic(&OnStringTableSelected, PropertyHandle, bIncludeEmptyStringTables);
 
         return PropertyCustomizationHelpers::MakePropertyComboBox(ComboArgs);
     }
@@ -189,19 +204,26 @@ public:
      * @param StringTableId The ID of the String Table to select a key from.
      * @param PropertyHandle The 'IPropertyHandle' that points to an 'FString' property that represents the String Table 
      * key.
-     * @param ShowSearchForItemCount If the number of items in the combo box is greater than this value, it will show a 
+     * @param ShowSearchForItemCount If the number of items in the combo box is greater than this value, it will show a
      * search box to allow filtering. -1 means to never show it.
+     * @param bDeferValueChanges Whether selecting a key leaves the property alone. The owner sets the key as formatted
+     * string on the property then, e.g. when an edit is confirmed.
      */
     [[nodiscard]] FORCEINLINE TSharedRef<SWidget> static MakeStringTableKeySelector(
         const TAttribute<FName>& StringTableId,
         const TSharedRef<IPropertyHandle>& PropertyHandle,
-        int32 ShowSearchForItemCount = 20)
+        int32 ShowSearchForItemCount = 20,
+        bool bDeferValueChanges = false)
     {
         FPropertyComboBoxArgs ComboArgs;
         ComboArgs.PropertyHandle = PropertyHandle;
         ComboArgs.ShowSearchForItemCount = ShowSearchForItemCount;
         ComboArgs.OnGetStrings = FOnGetPropertyComboBoxStrings::CreateStatic(&OnGetStringTableKeyStrings, StringTableId);
-        
+        if (bDeferValueChanges)
+        {
+            ComboArgs.OnValueSelected = FOnPropertyComboBoxValueSelected::CreateLambda([](const FString&) {});
+        }
+
         return PropertyCustomizationHelpers::MakePropertyComboBox(ComboArgs);
     }
 };
@@ -215,7 +237,8 @@ class IPropertyHandle;
 class SPSIStringTableId : public SCompoundWidget
 {
 public:
-    SLATE_BEGIN_ARGS(SPSIStringTableId) : _ShowSearchForItemCount(20), _IncludeEmptyStringTables(false)
+    SLATE_BEGIN_ARGS(SPSIStringTableId)
+        : _ShowSearchForItemCount(20), _IncludeEmptyStringTables(false), _DeferValueChanges(false)
     {
     }
 
@@ -224,6 +247,12 @@ public:
 
         /** Whether String Tables that do not have any entries yet should be selectable. */
         SLATE_ARGUMENT(bool, IncludeEmptyStringTables)
+
+        /**
+         * Whether selecting a String Table leaves the property alone. The owner applies the selection with
+         * 'ApplyStringTableId' then, e.g. when an edit is confirmed.
+         */
+        SLATE_ARGUMENT(bool, DeferValueChanges)
     SLATE_END_ARGS()
 
     /** Constructs this widget with InArgs */
@@ -232,15 +261,31 @@ public:
         const TSharedRef<IPropertyHandle> StructPropertyHandle = InArgs._StructPropertyHandle.ToSharedRef();
         const bool bAllowClear = !(StructPropertyHandle->GetMetaDataProperty()->PropertyFlags & CPF_NoClear);
 
-        const TSharedRef<IPropertyHandle> NamePropertyHandle = StructPropertyHandle->GetChildHandle(NAME_Name).ToSharedRef();
-        
+        NamePropertyHandle = StructPropertyHandle->GetChildHandle(NAME_Name);
+        bIncludeEmptyStringTables = InArgs._IncludeEmptyStringTables;
+
         ChildSlot
         [
-            FPSIStringTableEditorHelper::MakeStringTableSelector(NamePropertyHandle, bAllowClear,
+            FPSIStringTableEditorHelper::MakeStringTableSelector(NamePropertyHandle.ToSharedRef(), bAllowClear,
                                                                  InArgs._ShowSearchForItemCount,
-                                                                 InArgs._IncludeEmptyStringTables)
+                                                                 bIncludeEmptyStringTables,
+                                                                 InArgs._DeferValueChanges)
         ];
     }
+
+    /** Sets the String Table that the selector shows as 'String'. Used with 'DeferValueChanges'. */
+    void ApplyStringTableId(const FString& String) const
+    {
+        if (NamePropertyHandle.IsValid())
+        {
+            FPSIStringTableEditorHelper::SetStringTableFromDisplayString(String, NamePropertyHandle.ToSharedRef(),
+                                                                         bIncludeEmptyStringTables);
+        }
+    }
+
+private:
+    TSharedPtr<IPropertyHandle> NamePropertyHandle;
+    bool bIncludeEmptyStringTables = false;
 };
 
 /**
@@ -249,12 +294,18 @@ public:
 class SPSIStringTableEntryHandle : public SCompoundWidget
 {
 public:
-    SLATE_BEGIN_ARGS(SPSIStringTableEntryHandle)  : _ShowSearchForItemCount(20)
+    SLATE_BEGIN_ARGS(SPSIStringTableEntryHandle)  : _ShowSearchForItemCount(20), _DeferValueChanges(false)
         {
         }
 
         SLATE_ARGUMENT(TSharedPtr<IPropertyHandle>, StructPropertyHandle)
         SLATE_ARGUMENT(int32, ShowSearchForItemCount)
+
+        /**
+         * Whether selecting a String Table or a key leaves the properties alone. The owner applies a String Table
+         * with 'ApplyStringTableId' and a key as formatted string on its property then, e.g. when an edit is confirmed.
+         */
+        SLATE_ARGUMENT(bool, DeferValueChanges)
     SLATE_END_ARGS()
     
     /** Constructs this widget with InArgs */
@@ -278,11 +329,12 @@ public:
         const bool bAllowClear = !(StructPropertyHandle->GetMetaDataProperty()->PropertyFlags & CPF_NoClear);
 
         StringTableWidget = FPSIStringTableEditorHelper::MakeStringTableSelector(
-            StringTablePropertyHandle.ToSharedRef(), bAllowClear, InArgs._ShowSearchForItemCount, /*bIncludeEmptyStringTables*/ true);
+            StringTablePropertyHandle.ToSharedRef(), bAllowClear, InArgs._ShowSearchForItemCount,
+            /*bIncludeEmptyStringTables*/ true, InArgs._DeferValueChanges);
 
         StringTableKeyWidget = FPSIStringTableEditorHelper::MakeStringTableKeySelector(
             TAttribute<FName>::CreateSP(this, &SPSIStringTableEntryHandle::GetStringTableIdName),
-            StringTableKeyPropertyHandle.ToSharedRef(), InArgs._ShowSearchForItemCount);
+            StringTableKeyPropertyHandle.ToSharedRef(), InArgs._ShowSearchForItemCount, InArgs._DeferValueChanges);
         
         // Setup Change callback
         const FSimpleDelegate StringTableChangedDelegate = FSimpleDelegate::CreateSP(this, &SPSIStringTableEntryHandle::OnStringTableChanged);
@@ -321,6 +373,16 @@ public:
     TSharedPtr<SWidget> GetStringTableKeyWidget() const
     {
         return StringTableKeyWidget;
+    }
+
+    /** Sets the String Table that the selector shows as 'String'. Used with 'DeferValueChanges'. */
+    void ApplyStringTableId(const FString& String) const
+    {
+        if (StringTablePropertyHandle.IsValid())
+        {
+            FPSIStringTableEditorHelper::SetStringTableFromDisplayString(
+                String, StringTablePropertyHandle.ToSharedRef(), /*bIncludeEmptyStringTables*/ true);
+        }
     }
     
     TSharedPtr<IPropertyHandle> GetStringTableIdPropertyHandle() const
