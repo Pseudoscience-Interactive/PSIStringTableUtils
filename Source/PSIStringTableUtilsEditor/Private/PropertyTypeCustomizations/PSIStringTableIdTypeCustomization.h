@@ -18,11 +18,11 @@ public:
         return MakeShared<FPSIStringTableIdTypeCustomization>();
     }
     
-    //~ Begin IPropertyTypeCustomization interface
+    //~ Begin IPropertyTypeCustomization Interface
     virtual void CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow,
                                  IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
     virtual void CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
                                    IDetailChildrenBuilder& StructBuilder,
                                    IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
-    //~ End IPropertyTypeCustomization interface
+    //~ End IPropertyTypeCustomization Interface
 };

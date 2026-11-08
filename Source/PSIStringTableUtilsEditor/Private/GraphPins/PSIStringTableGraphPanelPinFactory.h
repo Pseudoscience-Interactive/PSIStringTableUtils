@@ -8,7 +8,7 @@
 
 struct FPSIStringTableGraphPanelPinFactory : FGraphPanelPinFactory
 {
-    //~ Begin FGraphPanelPinFactory Implementation
+    //~ Begin FGraphPanelPinFactory Interface
     virtual TSharedPtr<SGraphPin> CreatePin(UEdGraphPin* InPin) const override;
-    //~ End FGraphPanelPinFactory Implementation
+    //~ End FGraphPanelPinFactory Interface
 };
